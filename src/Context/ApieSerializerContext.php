@@ -8,4 +8,9 @@ final class ApieSerializerContext
     public function __construct(private ApieContext $apieContext)
     {
     }
+
+    public function getContext(): ApieContext
+    {
+        return $this->apieContext;
+    }
 }

@@ -5,20 +5,25 @@ use Apie\Core\Context\ApieContext;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Serializer\Context\ApieSerializerContext;
-use Apie\Serializer\Lists\DenormalizerList;
 use Apie\Serializer\Lists\NormalizerList;
+use Apie\Serializer\Normalizers\EnumNormalizer;
 
 class Serializer
 {
-    public function __construct(private NormalizerList $normalizers, private DenormalizerList $denormalizerList)
+    public function __construct(private NormalizerList $normalizers)
     {
+    }
+
+    public static function create(): self
+    {
+        return new self(new NormalizerList([new EnumNormalizer()]));
     }
 
     public function normalize(mixed $object, ApieContext $apieContext): string|int|float|bool|ItemList|ItemHashmap|null
     {
         $serializerContext = new ApieSerializerContext($apieContext);
-        foreach ($this->normalizers as $normalizer) {
-            if ($normalizer->isSupported($object, $serializerContext)) {
+        foreach ($this->normalizers->iterateOverNormalizers() as $normalizer) {
+            if ($normalizer->supportsNormalization($object, $serializerContext)) {
                 return $normalizer->normalize($object, $serializerContext);
             }
         }
@@ -31,9 +36,9 @@ class Serializer
             $object = new ItemList($object);
         }
         $serializerContext = new ApieSerializerContext($apieContext);
-        foreach ($this->denormalizers as $denormalizer) {
-            if ($denormalizer->isSupported($object, $desiredType, $serializerContext)) {
-                return $denormalizer->normalize($object, $desiredType, $serializerContext);
+        foreach ($this->normalizers->iterateOverDenormalizers() as $denormalizer) {
+            if ($denormalizer->supportsDenormalization($object, $desiredType, $serializerContext)) {
+                return $denormalizer->denormalize($object, $desiredType, $serializerContext);
             }
         }
         // TODO default behaviour

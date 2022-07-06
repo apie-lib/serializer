@@ -7,6 +7,6 @@ use Apie\Serializer\Context\ApieSerializerContext;
 
 interface NormalizerInterface
 {
-    public function isSupported(mixed $object, ApieSerializerContext $apieSerializerContext): bool;
+    public function supportsNormalization(mixed $object, ApieSerializerContext $apieSerializerContext): bool;
     public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): string|int|float|bool|null|ItemList|ItemHashmap;
 }
