@@ -43,7 +43,7 @@ class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
             $enum = $refl->getCase($object)->getValue();
         }
         $refl = $refl->getCase($enum->name);
-        if (!$apieSerializerContext->getContext()->isFiltered($refl)) {
+        if (!$apieSerializerContext->getContext()->appliesToContext($refl)) {
             throw new ItemCanNotBeNormalizedInCurrentContext($enum);
         }
         return $enum;
