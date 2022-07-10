@@ -22,7 +22,7 @@ class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
      */
     public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): string|int
     {
-        return $object->value ?? $object->key;
+        return $object->value ?? $object->name;
     }
 
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
