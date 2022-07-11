@@ -2,6 +2,7 @@
 namespace Apie\Tests\Serializer;
 
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Fixtures\Enums\ColorEnum;
@@ -9,11 +10,11 @@ use Apie\Fixtures\Enums\EmptyEnum;
 use Apie\Fixtures\Enums\IntEnum;
 use Apie\Fixtures\Enums\NoValueEnum;
 use Apie\Fixtures\Enums\RestrictedEnum;
+use Apie\Fixtures\Identifiers\UserWithAddressIdentifier;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
 use Apie\Serializer\Exceptions\ItemCanNotBeNormalizedInCurrentContext;
 use Apie\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;
-use ReflectionException;
 
 class SerializerTest extends TestCase
 {
@@ -29,7 +30,7 @@ class SerializerTest extends TestCase
     public function it_can_denormalize_objects(object $expected, mixed $input, string $desiredType, ApieContext $apieContext)
     {
         $serializer = $this->givenASerializer();
-        $this->assertEquals($expected, $serializer->denormalize($input, $desiredType, $apieContext));
+        $this->assertEquals($expected, $serializer->denormalizeNewObject($input, $desiredType, $apieContext));
     }
 
     public function denormalizeProvider()
@@ -57,6 +58,30 @@ class SerializerTest extends TestCase
             'blue',
             RestrictedEnum::class,
             new ApieContext(['authenticated' => true, 'locale' => 'nl'])
+        ];
+        $entity = new UserWithAddress(
+            AddressWithZipcodeCheck::fromNative([
+                'street' => 'Evergreen Terrace',
+                'streetNumber' => 742,
+                'zipcode' => '131313',
+                'city' => 'Springfield',
+            ]),
+            new UserWithAddressIdentifier('123e4567-e89b-12d3-a456-426614174000')
+        );
+        yield 'entity' => [
+            $entity,
+            [
+                'id' => '123e4567-e89b-12d3-a456-426614174000',
+                'address' => [
+                    'street' => 'Evergreen Terrace',
+                    'streetNumber' => 742,
+                    'zipcode' => '131313',
+                    'city' => 'Springfield',
+                ],
+                'password' => null,
+            ],
+            UserWithAddress::class,
+            new ApieContext()
         ];
     }
 
@@ -116,8 +141,8 @@ class SerializerTest extends TestCase
     public function empty_enums_always_fail()
     {
         $serializer = $this->givenASerializer();
-        $this->expectException(ReflectionException::class);
-        $serializer->denormalize(0, EmptyEnum::class, new ApieContext());
+        $this->expectException(InvalidTypeException::class);
+        $serializer->denormalizeNewObject(null, EmptyEnum::class, new ApieContext());
     }
 
     /**
@@ -128,7 +153,7 @@ class SerializerTest extends TestCase
     {
         $serializer = $this->givenASerializer();
         $this->expectException(ItemCanNotBeNormalizedInCurrentContext::class);
-        $serializer->denormalize($input, RestrictedEnum::class, $apieContext);
+        $serializer->denormalizeNewObject($input, RestrictedEnum::class, $apieContext);
     }
 
     public function invalidEnumsProvider()

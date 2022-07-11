@@ -7,6 +7,8 @@ use Apie\Serializer\Interfaces\NormalizerInterface;
 
 class NormalizerList extends ItemList
 {
+    protected bool $mutable = false;
+
     public function offsetGet(mixed $offset): NormalizerInterface|DenormalizerInterface
     {
         return parent::offsetGet($offset);

@@ -2,6 +2,7 @@
 namespace Apie\Serializer;
 
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Serializer\Context\ApieSerializerContext;
@@ -66,10 +67,10 @@ class Serializer
         return new ItemHashmap($returnValue);
     }
 
-    public function denormalize(string|int|float|bool|ItemList|ItemHashmap|array|null $object, string $desiredType, ApieContext $apieContext): mixed
+    public function denormalizeNewObject(string|int|float|bool|ItemList|ItemHashmap|array|null $object, string $desiredType, ApieContext $apieContext): mixed
     {
         if (is_array($object)) {
-            $object = new ItemList($object);
+            $object = new ItemHashmap($object);
         }
         $serializerContext = new ApieSerializerContext($this, $apieContext);
         foreach ($this->normalizers->iterateOverDenormalizers() as $denormalizer) {
@@ -77,6 +78,22 @@ class Serializer
                 return $denormalizer->denormalize($object, $desiredType, $serializerContext);
             }
         }
-        // TODO default behaviour
+        $refl = new ReflectionClass($desiredType);
+        if (!$refl->isInstantiable()) {
+            throw new InvalidTypeException($desiredType, 'a instantiable object');
+        }
+        $constructor = $refl->getConstructor();
+        $arguments = [];
+        if ($constructor) {
+            $arguments = $serializerContext->denormalizeFromMethod($object, $constructor);
+        }
+        $createdObject = new $desiredType(...$arguments);
+        return $this->denormalizeOnExistingObject($object, $createdObject, $apieContext);
+    }
+
+    public function denormalizeOnExistingObject(string|int|float|bool|ItemList|ItemHashmap|array|null $object, object $existingObject, ApieContext $apieContext): mixed
+    {
+        // TODO
+        return $existingObject;
     }
 }
