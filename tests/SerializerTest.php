@@ -1,9 +1,12 @@
 <?php
 namespace Apie\Tests\Serializer;
 
+use Apie\CommonValueObjects\Enums\Gender;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
+use Apie\Fixtures\Dto\DefaultExampleDto;
+use Apie\Fixtures\Dto\ExampleDto;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Fixtures\Enums\ColorEnum;
 use Apie\Fixtures\Enums\EmptyEnum;
@@ -83,6 +86,46 @@ class SerializerTest extends TestCase
             UserWithAddress::class,
             new ApieContext()
         ];
+        yield 'Simple DTO' => [
+            new DefaultExampleDto(),
+            [
+                'string' => 'default value',
+                'integer' => 42,
+                'floatingPoint' => 1.5,
+                'trueOrFalse' => true,
+                'mixed' => 48,
+                'noType' => 'Boom',
+                'gender' => 'M',
+            ],
+            DefaultExampleDto::class,
+            new ApieContext()
+        ];
+        yield 'Simple DTO, all default' => [
+            new DefaultExampleDto(),
+            [],
+            DefaultExampleDto::class,
+            new ApieContext()
+        ];
+        /*$dto = new ExampleDto();
+        $dto->string = 'string';
+        $dto->integer = 12;
+        $dto->floatingPoint = -42.5;
+        $dto->trueOrFalse = true;
+        $dto->mixed = 48;
+        $dto->gender = Gender::MALE;
+        yield 'Simple DTO, no default arguments' => [
+            $dto,
+            [
+                'string' => 'string',
+                'integer' => 12,
+                'floatingPoint' => -42.5,
+                'trueOrFalse' => true,
+                'mixed' => 48,
+                'gender' => 'M',
+            ],
+            ExampleDto::class,
+            new ApieContext()
+        ];*/ // TODO
     }
 
     /**
@@ -131,6 +174,19 @@ class SerializerTest extends TestCase
                 'password' => null,
             ]),
             $entity,
+            new ApieContext()
+        ];
+        yield 'Simple DTO' => [
+            new ItemHashmap([
+                'string' => 'default value',
+                'integer' => 42,
+                'floatingPoint' => 1.5,
+                'trueOrFalse' => true,
+                'mixed' => 48,
+                'noType' => 'Boom',
+                'gender' => 'M',
+            ]),
+            new DefaultExampleDto(),
             new ApieContext()
         ];
     }
