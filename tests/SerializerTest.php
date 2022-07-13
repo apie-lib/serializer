@@ -106,7 +106,7 @@ class SerializerTest extends TestCase
             DefaultExampleDto::class,
             new ApieContext()
         ];
-        /*$dto = new ExampleDto();
+        $dto = new ExampleDto();
         $dto->string = 'string';
         $dto->integer = 12;
         $dto->floatingPoint = -42.5;
@@ -125,7 +125,7 @@ class SerializerTest extends TestCase
             ],
             ExampleDto::class,
             new ApieContext()
-        ];*/ // TODO
+        ];
     }
 
     /**

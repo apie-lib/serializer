@@ -9,6 +9,8 @@ use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Lists\NormalizerList;
 use Apie\Serializer\Normalizers\BooleanNormalizer;
 use Apie\Serializer\Normalizers\EnumNormalizer;
+use Apie\Serializer\Normalizers\FloatNormalizer;
+use Apie\Serializer\Normalizers\IntegerNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
 use ReflectionClass;
@@ -26,6 +28,8 @@ class Serializer
             new EnumNormalizer(),
             new ValueObjectNormalizer(),
             new StringNormalizer(),
+            new IntegerNormalizer(),
+            new FloatNormalizer(),
             new BooleanNormalizer(),
         ]));
     }
@@ -72,6 +76,9 @@ class Serializer
         if (is_array($object)) {
             $object = new ItemHashmap($object);
         }
+        if ($desiredType === 'mixed') {
+            return $object;
+        }
         $serializerContext = new ApieSerializerContext($this, $apieContext);
         foreach ($this->normalizers->iterateOverDenormalizers() as $denormalizer) {
             if ($denormalizer->supportsDenormalization($object, $desiredType, $serializerContext)) {
@@ -91,9 +98,20 @@ class Serializer
         return $this->denormalizeOnExistingObject($object, $createdObject, $apieContext);
     }
 
-    public function denormalizeOnExistingObject(string|int|float|bool|ItemList|ItemHashmap|array|null $object, object $existingObject, ApieContext $apieContext): mixed
+    public function denormalizeOnExistingObject(ItemHashmap $object, object $existingObject, ApieContext $apieContext): mixed
     {
-        // TODO
+        $serializerContext = new ApieSerializerContext($this, $apieContext);
+        foreach ($apieContext->getApplicableSetters(new ReflectionClass($existingObject)) as $name => $setter) {
+            if (!isset($object[$name])) {
+                continue;
+            }
+            if ($setter instanceof ReflectionProperty) {
+                $setter->setValue($existingObject, $serializerContext->denormalizeFromTypehint($object[$name], $setter->getType()));
+                continue;
+            }
+            // todo run setters with extra arguments for context
+            //$returnValue[$name] = $serializerContext->normalizeChildElement($name, $setter->invoke($object));
+        }
         return $existingObject;
     }
 }

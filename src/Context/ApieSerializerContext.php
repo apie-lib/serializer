@@ -2,11 +2,14 @@
 namespace Apie\Serializer\Context;
 
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Exceptions\IndexNotFoundException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Serializer\Serializer;
 use Exception;
 use ReflectionMethod;
+use ReflectionNamedType;
+use ReflectionParameter;
 use ReflectionUnionType;
 use RuntimeException;
 
@@ -16,35 +19,46 @@ final class ApieSerializerContext
     {
     }
 
+    public function denormalizeFromTypehint(mixed $input, ReflectionNamedType|ReflectionUnionType|null $typehint): mixed
+    {
+        if ($typehint instanceof ReflectionUnionType) {
+            $lastException = new RuntimeException('Unknown error');
+            foreach ($typehint->getTypes() as $type) {
+                try {
+                    return $this->serializer->denormalizeNewObject($input, $type->getName(), $this->apieContext);
+                } catch (Exception $exception) {
+                    $lastException = $exception;
+                }
+            }
+            throw $lastException;
+        }
+        return $this->serializer->denormalizeNewObject($input, $typehint ? $typehint->getName() : 'mixed', $this->apieContext);
+    }
+
+    public function denormalizeFromParameter(ItemHashmap $input, ReflectionParameter $parameter): mixed
+    {
+        $key = $parameter->getName();
+        $type = $parameter->getType();
+        if (!$parameter->isOptional() && !isset($input[$key])) {
+            throw new IndexNotFoundException($key);
+        }
+        $defaultValue = $parameter->isOptional() ? $parameter->getDefaultValue() : null;
+        if ($type === null || ((string) $type) === 'mixed' || !isset($input[$key])) {
+            return $input[$key] ?? $defaultValue;
+        }
+        $newContext = new self($this->serializer, $this->createChildContext($key));
+        return $newContext->denormalizeFromTypehint($input[$key], $type);
+    }
+
     public function denormalizeFromMethod(mixed $input, ReflectionMethod $method): array
     {
         if (! $input instanceof ItemHashmap) {
             $input = $this->serializer->denormalizeNewObject($input, ItemHashmap::class, $this->apieContext);
         }
         $result = [];
+        // TODO: validation errors
         foreach ($method->getParameters() as $parameter) {
-            $key = $parameter->getName();
-            $type = $parameter->getType();
-            $defaultValue = $parameter->isOptional() ? $parameter->getDefaultValue() : null;
-            if ($type === null || ((string) $type) === 'mixed') {
-                $result[] = $input[$key] ?? $defaultValue;
-                continue;
-            }
-            if ($type instanceof ReflectionUnionType) {
-                $lastException = new RuntimeException('Unknown error');
-                foreach ($type->getTypes() as $type) {
-                    try {
-                        $outcome = $this->denormalizeChildElement($key, $input[$key] ?? $defaultValue, $type->getName());
-                        $result[] = $outcome;
-                        continue(2);
-                    } catch (Exception $exception) {
-                        $lastException = $exception;
-                    }
-                }
-                throw $lastException;
-            }
-            $outcome = $this->denormalizeChildElement($key, $input[$key] ?? $defaultValue, $type->getName());
-            $result[] = $outcome;
+            $result[] = $this->denormalizeFromParameter($input, $parameter);
         }
         return $result;
     }
