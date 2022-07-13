@@ -24,7 +24,7 @@
     "apie/core": "self.version"
   },
   "require-dev": {
-    "apie/common-value-objecs": "self.version",
+    "apie/common-value-objects": "self.version",
     "apie/fixtures": "self.version",
     "phpunit/phpunit": "^9.5",
     "phpspec/prophecy-phpunit": "^2.0"
