@@ -1,7 +1,6 @@
 <?php
 namespace Apie\Tests\Serializer;
 
-use Apie\CommonValueObjects\Enums\Gender;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
@@ -10,6 +9,7 @@ use Apie\Fixtures\Dto\ExampleDto;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Fixtures\Enums\ColorEnum;
 use Apie\Fixtures\Enums\EmptyEnum;
+use Apie\Fixtures\Enums\Gender;
 use Apie\Fixtures\Enums\IntEnum;
 use Apie\Fixtures\Enums\NoValueEnum;
 use Apie\Fixtures\Enums\RestrictedEnum;
