@@ -14,6 +14,7 @@ use Apie\Serializer\Normalizers\IntegerNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
 use ReflectionClass;
+use ReflectionMethod;
 use ReflectionProperty;
 
 class Serializer
@@ -69,6 +70,13 @@ class Serializer
             $returnValue[$name] = $serializerContext->normalizeChildElement($name, $getter->invoke($object));
         }
         return new ItemHashmap($returnValue);
+    }
+
+    public function denormalizeOnMethodCall(string|int|float|bool|ItemList|ItemHashmap|array|null $input, ?object $object, ReflectionMethod $method, ApieContext $apieContext): mixed
+    {
+        $serializerContext = new ApieSerializerContext($this, $apieContext);
+        $arguments = $serializerContext->denormalizeFromMethod($input, $method);
+        return $method->invokeArgs($object, $arguments);
     }
 
     public function denormalizeNewObject(string|int|float|bool|ItemList|ItemHashmap|array|null $object, string $desiredType, ApieContext $apieContext): mixed
