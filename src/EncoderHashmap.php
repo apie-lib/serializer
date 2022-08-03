@@ -3,9 +3,9 @@ namespace Apie\Serializer;
 
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Serializer\Encoders\JsonEncoder;
+use Apie\Serializer\Exceptions\NotAcceptedException;
 use Apie\Serializer\Interfaces\EncoderInterface;
 use LogicException;
-use NotAcceptedException;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\HttpFoundation\AcceptHeader;
 
@@ -32,13 +32,14 @@ final class EncoderHashmap extends ItemHashmap
             reset($this->internalArray);
             return key($this->internalArray);
         }
-        $acceptHeaders = AcceptHeader::fromString($request->getHeaderLine('Accept'));
+        $acceptString = $request->getHeaderLine('Accept');
+        $acceptHeaders = AcceptHeader::fromString($acceptString);
         foreach ($acceptHeaders->all() as $acceptHeaderItem) {
             $acceptHeaderValue = $acceptHeaderItem->getValue();
             if (isset($this->internalArray[$acceptHeaderValue])) {
                 return $acceptHeaderValue;
             }
         }
-        throw new NotAcceptedException();
+        throw new NotAcceptedException($acceptString);
     }
 }
