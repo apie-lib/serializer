@@ -3,13 +3,16 @@ namespace Apie\Serializer\Context;
 
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Exceptions\IndexNotFoundException;
+use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Serializer\Serializer;
 use Exception;
+use ReflectionIntersectionType;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
+use ReflectionType;
 use ReflectionUnionType;
 use RuntimeException;
 
@@ -19,8 +22,11 @@ final class ApieSerializerContext
     {
     }
 
-    public function denormalizeFromTypehint(mixed $input, ReflectionNamedType|ReflectionUnionType|null $typehint): mixed
+    public function denormalizeFromTypehint(mixed $input, ReflectionType|null $typehint): mixed
     {
+        if ($typehint instanceof ReflectionIntersectionType) {
+            throw new InvalidTypeException($typehint, 'ReflectionNamedType|ReflectionUnionType|null');
+        }
         if ($typehint instanceof ReflectionUnionType) {
             $lastException = new RuntimeException('Unknown error');
             foreach ($typehint->getTypes() as $type) {
@@ -32,7 +38,10 @@ final class ApieSerializerContext
             }
             throw $lastException;
         }
-        return $this->serializer->denormalizeNewObject($input, $typehint ? $typehint->getName() : 'mixed', $this->apieContext);
+        if ($typehint instanceof ReflectionNamedType) {
+            return $this->serializer->denormalizeNewObject($input, $typehint->getName(), $this->apieContext);
+        }
+        return $this->serializer->denormalizeNewObject($input, 'mixed', $this->apieContext);
     }
 
     public function denormalizeFromParameter(ItemHashmap $input, ReflectionParameter $parameter): mixed

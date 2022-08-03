@@ -11,9 +11,9 @@ class FloatNormalizer implements DenormalizerInterface
 {
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        return $desiredType ==='float' | $desiredType === 'double';
+        return $desiredType ==='float' || $desiredType === 'double';
     }
-    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): string
+    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): float
     {
         return Utils::toFloat($object);
     }

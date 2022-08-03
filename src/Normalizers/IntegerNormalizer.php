@@ -11,9 +11,9 @@ class IntegerNormalizer implements DenormalizerInterface
 {
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        return $desiredType ==='int' | $desiredType === 'integer';
+        return $desiredType ==='int' || $desiredType === 'integer';
     }
-    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): string
+    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): int
     {
         return Utils::toInt($object);
     }

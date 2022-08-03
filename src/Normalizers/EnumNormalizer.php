@@ -18,7 +18,7 @@ class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
     }
 
     /**
-     * @var UnitEnum $object
+     * @param UnitEnum $object
      */
     public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): string|int
     {
@@ -31,8 +31,8 @@ class EnumNormalizer implements NormalizerInterface, DenormalizerInterface
     }
 
     /**
-     * @var string|int $object
-     * @var class-string<UnitEnum> $desiredType
+     * @param string|int $object
+     * @param class-string<UnitEnum> $desiredType
      */
     public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): UnitEnum
     {

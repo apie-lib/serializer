@@ -11,9 +11,9 @@ class BooleanNormalizer implements DenormalizerInterface
 {
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        return $desiredType ==='bool' | $desiredType === 'boolean';
+        return $desiredType ==='bool' || $desiredType === 'boolean';
     }
-    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): string
+    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
         return match (gettype($object)) {
             'string' => filter_var($object, FILTER_VALIDATE_BOOLEAN),
