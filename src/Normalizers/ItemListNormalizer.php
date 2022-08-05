@@ -5,12 +5,13 @@ use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\NormalizerInterface;
+use Apie\Serializer\Lists\SerializedList;
 
 class ItemListNormalizer implements NormalizerInterface
 {
     public function supportsNormalization(mixed $object, ApieSerializerContext $apieSerializerContext): bool
     {
-        return $object instanceof ItemList;
+        return $object instanceof ItemList && !($object instanceof SerializedList);
     }
 
     /**
@@ -20,9 +21,9 @@ class ItemListNormalizer implements NormalizerInterface
     {
         $list = [];
         foreach ($object as $key => $value) {
-            $list[$key] = $apieSerializerContext->normalizeChildElement($key, $value);
+            $list[$key] = $apieSerializerContext->normalizeChildElement((string) $key, $value);
         }
 
-        return new ItemList($list);
+        return new SerializedList($list);
     }
 }
