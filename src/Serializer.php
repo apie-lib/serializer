@@ -12,6 +12,7 @@ use Apie\Serializer\Normalizers\EnumNormalizer;
 use Apie\Serializer\Normalizers\FloatNormalizer;
 use Apie\Serializer\Normalizers\IntegerNormalizer;
 use Apie\Serializer\Normalizers\ItemListNormalizer;
+use Apie\Serializer\Normalizers\PaginatedResultNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
 use ReflectionClass;
@@ -27,6 +28,7 @@ class Serializer
     public static function create(): self
     {
         return new self(new NormalizerList([
+            new PaginatedResultNormalizer(),
             new EnumNormalizer(),
             new ValueObjectNormalizer(),
             new StringNormalizer(),

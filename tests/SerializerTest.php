@@ -1,9 +1,14 @@
 <?php
 namespace Apie\Tests\Serializer;
 
+use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
+use Apie\Core\Lists\ItemList;
+use Apie\Core\Repositories\Lists\PaginatedResult;
+use Apie\Core\Repositories\Search\QuerySearch;
+use Apie\Core\Repositories\ValueObjects\LazyLoadedListIdentifier;
 use Apie\Fixtures\Dto\DefaultExampleDto;
 use Apie\Fixtures\Dto\ExampleDto;
 use Apie\Fixtures\Entities\UserWithAddress;
@@ -16,8 +21,10 @@ use Apie\Fixtures\Enums\RestrictedEnum;
 use Apie\Fixtures\Identifiers\UserWithAddressIdentifier;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
 use Apie\Serializer\Exceptions\ItemCanNotBeNormalizedInCurrentContext;
+use Apie\Serializer\Lists\SerializedList;
 use Apie\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class SerializerTest extends TestCase
 {
@@ -81,7 +88,6 @@ class SerializerTest extends TestCase
                     'zipcode' => '131313',
                     'city' => 'Springfield',
                 ],
-                'password' => null,
             ],
             UserWithAddress::class,
             new ApieContext()
@@ -171,7 +177,6 @@ class SerializerTest extends TestCase
                     'zipcode' => '131313',
                     'city' => 'Springfield',
                 ]),
-                'password' => null,
             ]),
             $entity,
             new ApieContext()
@@ -187,6 +192,35 @@ class SerializerTest extends TestCase
                 'gender' => 'M',
             ]),
             new DefaultExampleDto(),
+            new ApieContext()
+        ];
+        yield 'Pagination result' => [
+            new ItemHashmap([
+                'totalCount' => 1,
+                'list' => new SerializedList(
+                    [
+                        new ItemHashmap([
+                            'id' => $entity->getId()->toNative(),
+                            'address' => new ItemHashmap([
+                                'street' => 'Evergreen Terrace',
+                                'streetNumber' => 742,
+                                'zipcode' => '131313',
+                                'city' => 'Springfield',
+                            ]),
+                        ]),
+                    ]
+                ),
+                'first' => '/default/UserWithAddress?search=search',
+                'last' => '/default/UserWithAddress?search=search',
+            ]),
+            new PaginatedResult(
+                LazyLoadedListIdentifier::createFrom(new BoundedContextId('default'), new ReflectionClass($entity)),
+                1,
+                new ItemList([$entity]),
+                0,
+                20,
+                new QuerySearch(0, 20, 'search')
+            ),
             new ApieContext()
         ];
     }
