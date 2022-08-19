@@ -3,12 +3,12 @@ namespace Apie\Tests\Serializer;
 
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Datalayers\Lists\PaginatedResult;
+use Apie\Core\Datalayers\Search\QuerySearch;
+use Apie\Core\Datalayers\ValueObjects\LazyLoadedListIdentifier;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
-use Apie\Core\Repositories\Lists\PaginatedResult;
-use Apie\Core\Repositories\Search\QuerySearch;
-use Apie\Core\Repositories\ValueObjects\LazyLoadedListIdentifier;
 use Apie\Fixtures\Dto\DefaultExampleDto;
 use Apie\Fixtures\Dto\ExampleDto;
 use Apie\Fixtures\Entities\UserWithAddress;

@@ -61,7 +61,7 @@ final class ApieSerializerContext
 
     public function denormalizeFromMethod(mixed $input, ReflectionMethod $method): array
     {
-        if (! $input instanceof ItemHashmap) {
+        if (! ($input instanceof ItemHashmap)) {
             $input = $this->serializer->denormalizeNewObject($input, ItemHashmap::class, $this->apieContext);
         }
         $result = [];
