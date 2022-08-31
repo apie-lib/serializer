@@ -232,7 +232,7 @@ class SerializerTest extends TestCase
     {
         $refl = new ReflectionClass(EmptyEnum::class);
         if ($refl->isInstantiable()) {
-            $this->markTestSkipped('Used old version of PHP8.1 where this test fails');
+            $this->markTestSkipped('Used old version of PHP8.1 where this test fails. See https://github.com/php/php-src/issues/8583');
         }
         $serializer = $this->givenASerializer();
         $this->expectException(InvalidTypeException::class);
