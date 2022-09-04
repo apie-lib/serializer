@@ -33,6 +33,7 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
     {
         return $desiredType === ItemHashmap::class || $desiredType === ItemList::class;
     }
+
     public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
     {
         if (is_a($object, $desiredType, true)) {
