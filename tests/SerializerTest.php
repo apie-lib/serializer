@@ -200,6 +200,7 @@ class SerializerTest extends TestCase
         yield 'Polymorphic entity' => [
             new ItemHashmap([
                 'animalType' => 'cow',
+                'hasMilk' => false,
                 'id' => $animalId->toNative(),
             ]),
             new Cow($animalId),
