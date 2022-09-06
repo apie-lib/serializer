@@ -13,6 +13,7 @@ use Apie\Serializer\Normalizers\FloatNormalizer;
 use Apie\Serializer\Normalizers\IntegerNormalizer;
 use Apie\Serializer\Normalizers\ItemListNormalizer;
 use Apie\Serializer\Normalizers\PaginatedResultNormalizer;
+use Apie\Serializer\Normalizers\PolymorphicEntityNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
 use ReflectionClass;
@@ -29,6 +30,7 @@ class Serializer
     {
         return new self(new NormalizerList([
             new PaginatedResultNormalizer(),
+            new PolymorphicEntityNormalizer(),
             new EnumNormalizer(),
             new ValueObjectNormalizer(),
             new StringNormalizer(),
@@ -39,12 +41,14 @@ class Serializer
         ]));
     }
 
-    public function normalize(mixed $object, ApieContext $apieContext): string|int|float|bool|ItemList|ItemHashmap|null
+    public function normalize(mixed $object, ApieContext $apieContext, bool $forceDefaultNormalization = false): string|int|float|bool|ItemList|ItemHashmap|null
     {
         $serializerContext = new ApieSerializerContext($this, $apieContext);
-        foreach ($this->normalizers->iterateOverNormalizers() as $normalizer) {
-            if ($normalizer->supportsNormalization($object, $serializerContext)) {
-                return $normalizer->normalize($object, $serializerContext);
+        if (!$forceDefaultNormalization) {
+            foreach ($this->normalizers->iterateOverNormalizers() as $normalizer) {
+                if ($normalizer->supportsNormalization($object, $serializerContext)) {
+                    return $normalizer->normalize($object, $serializerContext);
+                }
             }
         }
         if (is_array($object)) {
@@ -66,6 +70,9 @@ class Serializer
         }
         $returnValue = [];
         foreach ($apieContext->getApplicableGetters(new ReflectionClass($object)) as $name => $getter) {
+            if ($getter->isStatic()) {
+                continue;
+            }
             if ($getter instanceof ReflectionProperty) {
                 $returnValue[$name] = $serializerContext->normalizeChildElement($name, $getter->getValue($object));
                 continue;

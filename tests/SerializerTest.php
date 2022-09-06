@@ -11,6 +11,8 @@ use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Fixtures\Dto\DefaultExampleDto;
 use Apie\Fixtures\Dto\ExampleDto;
+use Apie\Fixtures\Entities\Polymorphic\AnimalIdentifier;
+use Apie\Fixtures\Entities\Polymorphic\Cow;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Fixtures\Enums\ColorEnum;
 use Apie\Fixtures\Enums\EmptyEnum;
@@ -192,6 +194,15 @@ class SerializerTest extends TestCase
                 'gender' => 'M',
             ]),
             new DefaultExampleDto(),
+            new ApieContext()
+        ];
+        $animalId = AnimalIdentifier::createRandom();
+        yield 'Polymorphic entity' => [
+            new ItemHashmap([
+                'animalType' => 'cow',
+                'id' => $animalId->toNative(),
+            ]),
+            new Cow($animalId),
             new ApieContext()
         ];
         yield 'Pagination result' => [

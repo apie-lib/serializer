@@ -78,9 +78,9 @@ final class ApieSerializerContext
         return $this->serializer->denormalizeNewObject($input, $desiredType, $newContext);
     }
 
-    public function normalizeAgain(mixed $object): string|int|float|bool|ItemList|ItemHashmap|null
+    public function normalizeAgain(mixed $object, bool $forceDefaultNormalization = false): string|int|float|bool|ItemList|ItemHashmap|null
     {
-        return $this->serializer->normalize($object, $this->apieContext);
+        return $this->serializer->normalize($object, $this->apieContext, $forceDefaultNormalization);
     }
 
     public function normalizeChildElement(string $key, mixed $object): string|int|float|bool|ItemList|ItemHashmap|null
