@@ -7,7 +7,7 @@ class FormSubmitDecoder implements DecoderInterface
 {
     public function decode(string $input): string|int|float|bool|array|null
     {
-        $formContents = urldecode($input);
+        parse_str($input, $formContents);
         return $formContents['form'] ?? [];
     }
 }
