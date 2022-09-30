@@ -31,6 +31,7 @@ class Serializer
         return new self(new NormalizerList([
             new PaginatedResultNormalizer(),
             new PolymorphicEntityNormalizer(),
+            new StringableCompositeValueObjectNormalizer(),
             new EnumNormalizer(),
             new ValueObjectNormalizer(),
             new StringNormalizer(),
