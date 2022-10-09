@@ -13,7 +13,8 @@ class StringableCompositeValueObjectNormalizer implements NormalizerInterface
 {
     public function supportsNormalization(mixed $object, ApieSerializerContext $apieSerializerContext): bool
     {
-        if ($apieSerializerContext->getContext()->hasContext(ContextConstants::GET_ALL_OBJECTS)
+        $context = $apieSerializerContext->getContext();
+        if ($context->hasContext(ContextConstants::GET_ALL_OBJECTS) && $context->hasContext(ContextConstants::CMS)
             && $object instanceof ValueObjectInterface
             && $object instanceof Stringable) {
             $refl = new ReflectionClass($object);
