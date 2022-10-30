@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Serializer;
 
+use Apie\Core\Attributes\Context;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
@@ -110,6 +111,7 @@ class Serializer
         if (!$refl->isInstantiable()) {
             throw new InvalidTypeException($desiredType, 'a instantiable object');
         }
+
         $constructor = $refl->getConstructor();
         $arguments = [];
         if ($constructor) {
