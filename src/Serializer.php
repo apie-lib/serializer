@@ -72,6 +72,7 @@ class Serializer
             return $object;
         }
         $returnValue = [];
+
         foreach ($apieContext->getApplicableGetters(new ReflectionClass($object)) as $name => $getter) {
             if ($getter->isStatic()) {
                 continue;
