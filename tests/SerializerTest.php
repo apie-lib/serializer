@@ -134,6 +134,17 @@ class SerializerTest extends TestCase
             ExampleDto::class,
             new ApieContext()
         ];
+
+        $id = AnimalIdentifier::createRandom();
+        yield 'Polymorphic entity, specific' => [
+            new Cow($id),
+            [
+                'animalType' => 'cow',
+                'id' => $id->toNative(),
+            ],
+            Cow::class,
+            new ApieContext()
+        ];
     }
 
     /**

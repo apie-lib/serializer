@@ -1,11 +1,13 @@
 <?php
 namespace Apie\Serializer\Context;
 
+use Apie\Core\Attributes\Context;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Exceptions\IndexNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
+use Apie\Core\Metadata\Concerns\UseContextKey;
 use Apie\Serializer\Serializer;
 use Exception;
 use ReflectionIntersectionType;
@@ -18,6 +20,8 @@ use RuntimeException;
 
 final class ApieSerializerContext
 {
+    use UseContextKey;
+
     public function __construct(private Serializer $serializer, private ApieContext $apieContext)
     {
     }
@@ -48,6 +52,10 @@ final class ApieSerializerContext
     {
         $key = $parameter->getName();
         $type = $parameter->getType();
+        if ($parameter->getAttributes(Context::class)) {
+            $contextKey = $this->getContextKey($this->apieContext, $parameter, false);
+            return $this->apieContext->getContext($contextKey);
+        }
         if (!$parameter->isOptional() && !isset($input[$key])) {
             throw new IndexNotFoundException($key);
         }

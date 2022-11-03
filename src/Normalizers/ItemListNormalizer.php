@@ -19,7 +19,7 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
     /**
      * @param ItemList $object
      */
-    public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): string|int|float|bool|null|ItemList|ItemHashmap
+    public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): SerializedList
     {
         $list = [];
         foreach ($object as $key => $value) {

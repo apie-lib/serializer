@@ -1,11 +1,15 @@
 <?php
 namespace Apie\Serializer;
 
-use Apie\Core\Attributes\Context;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
+use Apie\Core\Metadata\Concerns\UseContextKey;
+use Apie\Core\Metadata\Fields\FieldInterface;
+use Apie\Core\Metadata\GetterInterface;
+use Apie\Core\Metadata\MetadataFactory;
+use Apie\Core\Metadata\SetterInterface;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Lists\NormalizerList;
 use Apie\Serializer\Normalizers\BooleanNormalizer;
@@ -20,10 +24,11 @@ use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
 use ReflectionClass;
 use ReflectionMethod;
-use ReflectionProperty;
 
 class Serializer
 {
+    use UseContextKey;
+
     public function __construct(private NormalizerList $normalizers)
     {
     }
@@ -32,7 +37,7 @@ class Serializer
     {
         return new self(new NormalizerList([
             new PaginatedResultNormalizer(),
-            new PolymorphicEntityNormalizer(),
+            //new PolymorphicEntityNormalizer(),
             new StringableCompositeValueObjectNormalizer(),
             new EnumNormalizer(),
             new ValueObjectNormalizer(),
@@ -71,18 +76,17 @@ class Serializer
         if (!is_object($object)) {
             return $object;
         }
+        $metadata = MetadataFactory::getResultMetadata(new ReflectionClass($object), $apieContext);
+
         $returnValue = [];
 
-        foreach ($apieContext->getApplicableGetters(new ReflectionClass($object)) as $name => $getter) {
-            if ($getter->isStatic()) {
-                continue;
+        foreach ($metadata->getHashmap() as $fieldName => $metadata) {
+            if ($metadata->isField() && $metadata instanceof GetterInterface) {
+                $returnValue[$fieldName] = $serializerContext->normalizeChildElement(
+                    $fieldName,
+                    $metadata->getValue($object, $apieContext)
+                );
             }
-            if ($getter instanceof ReflectionProperty) {
-                $returnValue[$name] = $serializerContext->normalizeChildElement($name, $getter->getValue($object));
-                continue;
-            }
-            // todo run getters with extra arguments for context
-            $returnValue[$name] = $serializerContext->normalizeChildElement($name, $getter->invoke($object));
         }
         return new ItemHashmap($returnValue);
     }
@@ -124,17 +128,29 @@ class Serializer
 
     public function denormalizeOnExistingObject(ItemHashmap $object, object $existingObject, ApieContext $apieContext): mixed
     {
+        $refl = new ReflectionClass($existingObject);
+        $metadata = MetadataFactory::getCreationMetadata(
+            $refl,
+            $apieContext
+        );
+
         $serializerContext = new ApieSerializerContext($this, $apieContext);
-        foreach ($apieContext->getApplicableSetters(new ReflectionClass($existingObject)) as $name => $setter) {
-            if (!isset($object[$name])) {
-                continue;
+        foreach ($metadata->getHashmap() as $fieldName => $meta) {
+            /** @var FieldInterface $meta */
+            if ($meta instanceof SetterInterface) {
+                if (!isset($object[$fieldName])) {
+                    $meta->markValueAsMissing();
+                    continue;
+                }
+                $meta->setValue(
+                    $existingObject,
+                    $serializerContext->denormalizeFromTypehint(
+                        $object[$fieldName],
+                        $meta->getTypehint()
+                    ),
+                    $apieContext
+                );
             }
-            if ($setter instanceof ReflectionProperty) {
-                $setter->setValue($existingObject, $serializerContext->denormalizeFromTypehint($object[$name], $setter->getType()));
-                continue;
-            }
-            // todo run setters with extra arguments for context
-            //$returnValue[$name] = $serializerContext->normalizeChildElement($name, $setter->invoke($object));
         }
         return $existingObject;
     }
