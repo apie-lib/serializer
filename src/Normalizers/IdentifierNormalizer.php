@@ -16,10 +16,11 @@ class IdentifierNormalizer implements DenormalizerInterface
 {
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        if (class_exists($desiredType) && $apieSerializerContext->getContext()->hasContext(ApieDatalayer::class)) {
+        $apieContext = $apieSerializerContext->getContext();
+        if (class_exists($desiredType) && $apieContext->hasContext(ApieDatalayer::class) && $apieContext->hasContext(BoundedContextId::class)) {
             $refl = new ReflectionClass($desiredType);
-            $datalayer = $$apieSerializerContext->getContext()->getContext(ApieDatalayer::class);
-            $boundedContextId = $apieSerializerContext->getContext()->getContext(BoundedContextId::class);
+            $datalayer = $apieContext->getContext(ApieDatalayer::class);
+            $boundedContextId = $apieContext->getContext(BoundedContextId::class);
             return $refl->implementsInterface(IdentifierInterface::class)
                 && (!$datalayer instanceof ApieDatalayerWithSupport || $datalayer->isSupported($refl, $boundedContextId));
         }
