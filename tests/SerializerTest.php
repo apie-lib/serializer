@@ -3,6 +3,7 @@ namespace Apie\Tests\Serializer;
 
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\Datalayers\Lists\PaginatedResult;
 use Apie\Core\Datalayers\Search\QuerySearch;
 use Apie\Core\Datalayers\ValueObjects\LazyLoadedListIdentifier;
@@ -11,6 +12,7 @@ use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Fixtures\Dto\DefaultExampleDto;
 use Apie\Fixtures\Dto\ExampleDto;
+use Apie\Fixtures\Entities\Order;
 use Apie\Fixtures\Entities\Polymorphic\AnimalIdentifier;
 use Apie\Fixtures\Entities\Polymorphic\Cow;
 use Apie\Fixtures\Entities\UserWithAddress;
@@ -20,7 +22,9 @@ use Apie\Fixtures\Enums\Gender;
 use Apie\Fixtures\Enums\IntEnum;
 use Apie\Fixtures\Enums\NoValueEnum;
 use Apie\Fixtures\Enums\RestrictedEnum;
+use Apie\Fixtures\Identifiers\OrderIdentifier;
 use Apie\Fixtures\Identifiers\UserWithAddressIdentifier;
+use Apie\Fixtures\Lists\OrderLineList;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
 use Apie\Serializer\Exceptions\ItemCanNotBeNormalizedInCurrentContext;
 use Apie\Serializer\Lists\SerializedList;
@@ -144,6 +148,20 @@ class SerializerTest extends TestCase
             ],
             Cow::class,
             new ApieContext()
+        ];
+
+        $orderIdentifier = OrderIdentifier::createRandom();
+        $order = new Order($orderIdentifier, new OrderLineList([]));
+        $dataLayer = $this->prophesize(ApieDatalayer::class);
+        $dataLayer->find($orderIdentifier)->willReturn($order);
+
+        yield 'Identifier with data layer check' => [
+            $orderIdentifier,
+            $orderIdentifier->toNative(),
+            OrderIdentifier::class,
+            new ApieContext([
+                ApieDatalayer::class => $dataLayer,
+            ])
         ];
     }
 
