@@ -79,11 +79,10 @@ class Serializer
             return $object;
         }
         $metadata = MetadataFactory::getResultMetadata(new ReflectionClass($object), $apieContext);
-
         $returnValue = [];
 
-        foreach ($metadata->getHashmap() as $fieldName => $metadata) {
-            if ($metadata->isField() && $metadata instanceof GetterInterface) {
+        foreach ($metadata->getHashmap()->filterOnContext($apieContext, getters: true) as $fieldName => $metadata) {
+            if ($metadata->isField()) {
                 $returnValue[$fieldName] = $serializerContext->normalizeChildElement(
                     $fieldName,
                     $metadata->getValue($object, $apieContext)
@@ -137,22 +136,20 @@ class Serializer
         );
 
         $serializerContext = new ApieSerializerContext($this, $apieContext);
-        foreach ($metadata->getHashmap() as $fieldName => $meta) {
-            /** @var FieldInterface $meta */
-            if ($meta instanceof SetterInterface) {
-                if (!isset($object[$fieldName])) {
-                    $meta->markValueAsMissing();
-                    continue;
-                }
-                $meta->setValue(
-                    $existingObject,
-                    $serializerContext->denormalizeFromTypehint(
-                        $object[$fieldName],
-                        $meta->getTypehint()
-                    ),
-                    $apieContext
-                );
+        foreach ($metadata->getHashmap()->filterOnContext($apieContext, setters: true) as $fieldName => $meta) {
+            /** @var FieldInterface&SetterInterface $meta */
+            if (!isset($object[$fieldName])) {
+                $meta->markValueAsMissing();
+                continue;
             }
+            $meta->setValue(
+                $existingObject,
+                $serializerContext->denormalizeFromTypehint(
+                    $object[$fieldName],
+                    $meta->getTypehint()
+                ),
+                $apieContext
+            );
         }
         return $existingObject;
     }

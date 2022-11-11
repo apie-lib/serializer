@@ -12,6 +12,7 @@ use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Fixtures\Dto\DefaultExampleDto;
 use Apie\Fixtures\Dto\ExampleDto;
+use Apie\Fixtures\Entities\CollectionItemOwned;
 use Apie\Fixtures\Entities\Order;
 use Apie\Fixtures\Entities\Polymorphic\AnimalIdentifier;
 use Apie\Fixtures\Entities\Polymorphic\Cow;
@@ -22,6 +23,7 @@ use Apie\Fixtures\Enums\Gender;
 use Apie\Fixtures\Enums\IntEnum;
 use Apie\Fixtures\Enums\NoValueEnum;
 use Apie\Fixtures\Enums\RestrictedEnum;
+use Apie\Fixtures\Identifiers\CollectionItemOwnedIdentifier;
 use Apie\Fixtures\Identifiers\OrderIdentifier;
 use Apie\Fixtures\Identifiers\UserWithAddressIdentifier;
 use Apie\Fixtures\Lists\OrderLineList;
@@ -210,6 +212,15 @@ class SerializerTest extends TestCase
                 ]),
             ]),
             $entity,
+            new ApieContext()
+        ];
+        $objectId = CollectionItemOwnedIdentifier::createRandom();
+        yield 'Entity with context' => [
+            new ItemHashmap([
+                'id' => $objectId->toNative(),
+                'owned' => true,
+            ]),
+            new CollectionItemOwned($objectId, $entity, true),
             new ApieContext()
         ];
         yield 'Simple DTO' => [
