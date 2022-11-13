@@ -7,7 +7,6 @@ use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Metadata\Concerns\UseContextKey;
 use Apie\Core\Metadata\Fields\FieldInterface;
-use Apie\Core\Metadata\GetterInterface;
 use Apie\Core\Metadata\MetadataFactory;
 use Apie\Core\Metadata\SetterInterface;
 use Apie\Serializer\Context\ApieSerializerContext;
