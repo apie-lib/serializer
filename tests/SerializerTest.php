@@ -126,6 +126,7 @@ class SerializerTest extends TestCase
         $dto->floatingPoint = -42.5;
         $dto->trueOrFalse = true;
         $dto->mixed = 48;
+        $dto->noType = new ItemList([1, 2, 3]);
         $dto->gender = Gender::MALE;
         yield 'Simple DTO, no default arguments' => [
             $dto,
@@ -135,6 +136,7 @@ class SerializerTest extends TestCase
                 'floatingPoint' => -42.5,
                 'trueOrFalse' => true,
                 'mixed' => 48,
+                'noType' => [1, 2, 3],
                 'gender' => 'M',
             ],
             ExampleDto::class,

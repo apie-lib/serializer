@@ -1,12 +1,14 @@
 <?php
 namespace Apie\Serializer\Normalizers;
 
+use Apie\CompositeValueObjects\CompositeValueObject;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\ValueObjects\Interfaces\ValueObjectInterface;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
+use ReflectionClass;
 
 class ValueObjectNormalizer implements NormalizerInterface, DenormalizerInterface
 {
@@ -24,7 +26,11 @@ class ValueObjectNormalizer implements NormalizerInterface, DenormalizerInterfac
     }
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        return is_a($desiredType, ValueObjectInterface::class, true);
+        if (is_a($desiredType, ValueObjectInterface::class, true)) {
+            $class = new ReflectionClass($desiredType);
+            return !in_array(CompositeValueObject::class, $class->getTraitNames());
+        }
+        return false;
     }
     public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
     {
