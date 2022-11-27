@@ -1,11 +1,13 @@
 <?php
 namespace Apie\Serializer\Exceptions;
 
+use Apie\Core\Attributes\SchemaMethod;
 use Apie\Core\Exceptions\ApieException;
 use Apie\Core\Exceptions\HttpStatusCodeException;
 use Apie\Core\Lists\StringHashmap;
 use Exception;
 
+#[SchemaMethod('provideSchema')]
 class ValidationException extends ApieException implements HttpStatusCodeException
 {
     public function getStatusCode(): int
@@ -62,5 +64,23 @@ class ValidationException extends ApieException implements HttpStatusCodeExcepti
         }
 
         return $newList;
+    }
+
+    public static function provideSchema(): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'message' => [
+                    'type' => 'string',
+                ],
+                'errors' => [
+                    'type' => 'object',
+                    'additionalProperties' => [
+                        'type' => 'string',
+                    ]
+                ],
+            ]
+        ];
     }
 }
