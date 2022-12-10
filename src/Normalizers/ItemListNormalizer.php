@@ -7,26 +7,31 @@ use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
+use Apie\Serializer\Lists\SerializedHashmap;
 use Apie\Serializer\Lists\SerializedList;
 
 class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
 {
     public function supportsNormalization(mixed $object, ApieSerializerContext $apieSerializerContext): bool
     {
-        return $object instanceof ItemList && !($object instanceof SerializedList);
+        if ($object instanceof ItemList && !($object instanceof SerializedList)) {
+            return true;
+        }
+
+        return ($object instanceof ItemHashmap && !($object instanceof SerializedHashmap));
     }
 
     /**
-     * @param ItemList $object
+     * @param ItemList|ItemHashmap $object
      */
-    public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): SerializedList
+    public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): SerializedList|SerializedHashmap
     {
         $list = [];
         foreach ($object as $key => $value) {
             $list[$key] = $apieSerializerContext->normalizeChildElement((string) $key, $value);
         }
 
-        return new SerializedList($list);
+        return $object instanceof ItemList ? new SerializedList($list) : new SerializedHashmap($list);
     }
 
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool

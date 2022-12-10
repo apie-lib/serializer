@@ -2,16 +2,52 @@
 namespace Apie\Tests\Serializer;
 
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Lists\ItemHashmap;
+use Apie\Core\Metadata\CompositeMetadata;
+use Apie\Core\Metadata\MetadataFactory;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Serializer\Exceptions\ValidationException;
+use Apie\Serializer\Lists\SerializedHashmap;
 use Apie\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class ObjectValidationErrorTest extends TestCase
 {
     public function givenASerializer(): Serializer
     {
         return Serializer::create();
+    }
+
+    /**
+     * @test
+     */
+    public function it_has_metadata_for_validation_errors()
+    {
+        $metadata = MetadataFactory::getResultMetadata(new ReflectionClass(ValidationException::class), new ApieContext());
+        $this->assertInstanceOf(CompositeMetadata::class, $metadata);
+        $fields = $metadata->getHashmap()->toArray();
+        $this->assertArrayHasKey('message', $fields);
+        $this->assertArrayHasKey('errors', $fields);
+    }
+
+    /**
+     * @test
+     */
+    public function it_serializes_validation_errors()
+    {
+        $serializer = $this->givenASerializer();
+        $error = ValidationException::createFromArray(['error' => new \Exception('This is an error')]);
+        $actual = $serializer->normalize($error, new ApieContext());
+        $expected = new ItemHashmap([
+            'message' => 'Validation error:  This is an error',
+            'statusCode' => 422,
+            'code' => 0,
+            'errors' => new SerializedHashmap([
+                'error' => 'This is an error',
+            ])
+        ]);
+        $this->assertEquals($expected, $actual);
     }
 
     /**

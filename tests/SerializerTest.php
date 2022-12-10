@@ -29,13 +29,17 @@ use Apie\Fixtures\Identifiers\UserWithAddressIdentifier;
 use Apie\Fixtures\Lists\OrderLineList;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
 use Apie\Serializer\Exceptions\ItemCanNotBeNormalizedInCurrentContext;
+use Apie\Serializer\Lists\SerializedHashmap;
 use Apie\Serializer\Lists\SerializedList;
 use Apie\Serializer\Serializer;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use ReflectionClass;
 
 class SerializerTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function givenASerializer(): Serializer
     {
         return Serializer::create();
@@ -173,7 +177,7 @@ class SerializerTest extends TestCase
      * @test
      * @dataProvider normalizeProvider
      */
-    public function it_can_normalize_objects(string|int|ItemHashmap $expected, object $input, ApieContext $apieContext)
+    public function it_can_normalize_objects(string|int|ItemHashmap|ItemList $expected, object $input, ApieContext $apieContext)
     {
         $serializer = $this->givenASerializer();
         $actual = $serializer->normalize($input, $apieContext);
@@ -247,6 +251,16 @@ class SerializerTest extends TestCase
             ]),
             new Cow($animalId),
             new ApieContext()
+        ];
+        yield 'Generic hashmap' => [
+            new SerializedHashmap(['a' => 2, 'b' => 'pizza']),
+            new ItemHashmap(['a' => 2, 'b' => 'pizza']),
+            new ApieContext(),
+        ];
+        yield 'Generic list' => [
+            new SerializedList([2, 'pizza']),
+            new ItemList([2, 'pizza']),
+            new ApieContext(),
         ];
         yield 'Pagination result' => [
             new ItemHashmap([
