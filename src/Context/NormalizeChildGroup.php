@@ -3,9 +3,11 @@ namespace Apie\Serializer\Context;
 
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Exceptions\IndexNotFoundException;
+use Apie\Core\Metadata\Fields\FallbackFieldInterface;
 use Apie\Core\Metadata\Fields\FieldInterface;
 use Apie\Core\Metadata\MetadataInterface;
 use Apie\Core\Metadata\SetterInterface;
+use Apie\Serializer\Exceptions\ThisIsNotAFieldException;
 use Exception;
 use ReflectionClass;
 
@@ -42,7 +44,13 @@ class NormalizeChildGroup
                     if ($fieldMetadata->isRequired()) {
                         $validationErrors[$fieldName] = new IndexNotFoundException($fieldName);
                     }
+                    if ($fieldMetadata instanceof FallbackFieldInterface) {
+                        $built[$fieldName] = $fieldMetadata->getMissingValue();
+                    }
                     continue;
+                }
+                if (!$fieldMetadata->isField()) {
+                    throw new ThisIsNotAFieldException($fieldName);
                 }
                 $built[$fieldName] = new NormalizedValue(
                     $this->serializerContext->denormalizeFromTypehint(
