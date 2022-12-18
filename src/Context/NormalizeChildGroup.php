@@ -45,7 +45,10 @@ class NormalizeChildGroup
                         $validationErrors[$fieldName] = new IndexNotFoundException($fieldName);
                     }
                     if ($fieldMetadata instanceof FallbackFieldInterface) {
-                        $built[$fieldName] = $fieldMetadata->getMissingValue();
+                        $built[$fieldName] = new NormalizedValue(
+                            $fieldMetadata->getMissingValue($this->apieContext),
+                            $fieldMetadata
+                        );
                     }
                     continue;
                 }
