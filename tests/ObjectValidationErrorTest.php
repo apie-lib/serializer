@@ -5,7 +5,9 @@ use Apie\Core\Context\ApieContext;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Metadata\CompositeMetadata;
 use Apie\Core\Metadata\MetadataFactory;
+use Apie\CountryAndPhoneNumber\CountryAndPhoneNumber;
 use Apie\Fixtures\Entities\UserWithAddress;
+use Apie\Fixtures\TestHelpers\TestValidationError;
 use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Lists\SerializedHashmap;
 use Apie\Serializer\Serializer;
@@ -14,6 +16,8 @@ use ReflectionClass;
 
 class ObjectValidationErrorTest extends TestCase
 {
+    use TestValidationError;
+
     public function givenASerializer(): Serializer
     {
         return Serializer::create();
@@ -57,15 +61,12 @@ class ObjectValidationErrorTest extends TestCase
     public function it_throws_validation_errors_on_incorrect_input(array $expected, mixed $input, string $desiredType, ApieContext $apieContext)
     {
         $serializer = $this->givenASerializer();
-        try {
-            $serializer->denormalizeNewObject($input, $desiredType, $apieContext);
-            $this->fail('denormalizeNewObject should have thrown a validation error');
-        } catch (ValidationException $validationException) {
-            $this->assertEquals(
-                $expected,
-                $validationException->getErrors()->toArray()
-            );
-        }
+        $this->assertValidationError(
+            $expected,
+            function () use ($serializer, $input, $desiredType, $apieContext) {
+                $serializer->denormalizeNewObject($input, $desiredType, $apieContext);
+            }
+        );
     }
 
     public function validationErrorProvider()
@@ -146,5 +147,40 @@ class ObjectValidationErrorTest extends TestCase
             UserWithAddress::class,
             new ApieContext()
         ];
+        if (class_exists(CountryAndPhoneNumber::class)) {
+            yield 'empty country and phone number' => [
+                [
+                    'country' => 'Type "" is not expected, expected ISO3166_1_Alpha_2',
+                ],
+                [
+                    'phoneNumber' => '',
+                    'country' => '',
+                ],
+                CountryAndPhoneNumber::class,
+                new ApieContext()
+            ];
+            yield 'empty phone number' => [
+                [
+                    'phoneNumber' => 'Phone number and country are not from the same country. Country is "NL", phone number is "(unknown)"',
+                ],
+                [
+                    'phoneNumber' => '',
+                    'country' => 'NL',
+                ],
+                CountryAndPhoneNumber::class,
+                new ApieContext()
+            ];
+            yield 'empty country' => [
+                [
+                    'country' => 'Type "" is not expected, expected ISO3166_1_Alpha_2',
+                ],
+                [
+                    'phoneNumber' => '+31611223344',
+                    'country' => '',
+                ],
+                CountryAndPhoneNumber::class,
+                new ApieContext()
+            ];
+        }
     }
 }

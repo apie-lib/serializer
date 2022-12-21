@@ -37,31 +37,33 @@ class NormalizeChildGroup
         }
         // this construction is for performance reasons as it maintains only one try catch context.
         while (!empty($todoList)) {
-            /** @var FieldInterface&SetterInterface $fieldMetadata */
-            list($fieldName, $fieldMetadata) = array_pop($todoList);
             try {
-                if (!isset($input[$fieldName])) {
-                    if ($fieldMetadata->isRequired()) {
-                        $validationErrors[$fieldName] = new IndexNotFoundException($fieldName);
+                while (!empty($todoList)) {
+                    /** @var FieldInterface&SetterInterface $fieldMetadata */
+                    list($fieldName, $fieldMetadata) = array_pop($todoList);
+                    if (!isset($input[$fieldName])) {
+                        if ($fieldMetadata->isRequired()) {
+                            $validationErrors[$fieldName] = new IndexNotFoundException($fieldName);
+                        }
+                        if ($fieldMetadata instanceof FallbackFieldInterface) {
+                            $built[$fieldName] = new NormalizedValue(
+                                $fieldMetadata->getMissingValue($this->apieContext),
+                                $fieldMetadata
+                            );
+                        }
+                        continue;
                     }
-                    if ($fieldMetadata instanceof FallbackFieldInterface) {
-                        $built[$fieldName] = new NormalizedValue(
-                            $fieldMetadata->getMissingValue($this->apieContext),
-                            $fieldMetadata
-                        );
+                    if (!$fieldMetadata->isField()) {
+                        throw new ThisIsNotAFieldException($fieldName);
                     }
-                    continue;
+                    $built[$fieldName] = new NormalizedValue(
+                        $this->serializerContext->denormalizeFromTypehint(
+                            $input[$fieldName],
+                            $fieldMetadata->getTypehint()
+                        ),
+                        $fieldMetadata
+                    );
                 }
-                if (!$fieldMetadata->isField()) {
-                    throw new ThisIsNotAFieldException($fieldName);
-                }
-                $built[$fieldName] = new NormalizedValue(
-                    $this->serializerContext->denormalizeFromTypehint(
-                        $input[$fieldName],
-                        $fieldMetadata->getTypehint()
-                    ),
-                    $fieldMetadata
-                );
             } catch (Exception $error) {
                 $validationErrors[$fieldName] = $error;
             }

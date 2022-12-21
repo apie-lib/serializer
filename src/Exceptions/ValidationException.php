@@ -59,11 +59,19 @@ class ValidationException extends ApieException implements HttpStatusCodeExcepti
     {
         $newList = [];
         foreach ($this->errors as $property => $errorMessage) {
-            $newPropertyName = $prefix ? ($prefix . '.' . $property) : $property;
+            $newPropertyName = self::mergeProperty($prefix, $property);
             $newList[$newPropertyName] = $errorMessage;
         }
 
         return $newList;
+    }
+
+    private static function mergeProperty(string $prefix, string $property): string
+    {
+        if ($prefix) {
+            return $property ? ($prefix . '.' . $property) : $prefix;
+        }
+        return $property;
     }
 
     public static function provideSchema(): array
