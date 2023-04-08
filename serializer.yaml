@@ -1,0 +1,9 @@
+services:
+    Apie\Serializer\Serializer:
+      factory: ['Apie\Serializer\Serializer', 'create']
+
+    Apie\Serializer\EncoderHashmap:
+      factory: ['Apie\Serializer\EncoderHashmap', 'create']
+
+    Apie\Serializer\DecoderHashmap:
+      factory: ['Apie\Serializer\DecoderHashmap', 'create']
