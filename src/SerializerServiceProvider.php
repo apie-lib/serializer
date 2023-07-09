@@ -7,7 +7,6 @@ use Illuminate\Support\ServiceProvider;
 /**
  * This file is generated with apie/service-provider-generator from file: serializer.yaml
  * @codecoverageIgnore
- * @phpstan-ignore
  */
 class SerializerServiceProvider extends ServiceProvider
 {
