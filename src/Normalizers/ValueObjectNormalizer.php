@@ -1,10 +1,10 @@
 <?php
 namespace Apie\Serializer\Normalizers;
 
-use Apie\CompositeValueObjects\CompositeValueObject;
-use Apie\CompositeValueObjects\CompositeWithOwnValidation;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
+use Apie\Core\ValueObjects\CompositeValueObject;
+use Apie\Core\ValueObjects\CompositeWithOwnValidation;
 use Apie\Core\ValueObjects\Interfaces\ValueObjectInterface;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Exceptions\ValidationException;

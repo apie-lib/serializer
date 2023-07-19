@@ -2,7 +2,7 @@
 namespace Apie\Serializer\Normalizers;
 
 use Apie\Common\ContextConstants;
-use Apie\CompositeValueObjects\CompositeValueObject;
+use Apie\Core\ValueObjects\CompositeValueObject;
 use Apie\Core\ValueObjects\Interfaces\ValueObjectInterface;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\NormalizerInterface;
