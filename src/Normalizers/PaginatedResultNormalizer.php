@@ -77,13 +77,10 @@ class PaginatedResultNormalizer implements NormalizerInterface
      */
     private function renderNext(string $uri, PaginatedResult $object): ?string
     {
-        $pageIndex = 1 + floor($object->totalCount / $object->pageSize);
+        $pageIndex = $object->pageNumber + 1;
         if ($pageIndex * $object->pageSize > $object->totalCount) {
-            $pageIndex--;
+            return null;
         }
-        if ($object->pageNumber < $pageIndex) {
-            return $uri . $object->querySearch->withPageIndex((int) $pageIndex)->toHttpQuery();
-        }
-        return null;
+        return $uri . $object->querySearch->withPageIndex((int) $pageIndex)->toHttpQuery();
     }
 }
