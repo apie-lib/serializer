@@ -18,6 +18,7 @@ use Apie\Serializer\Normalizers\IdentifierNormalizer;
 use Apie\Serializer\Normalizers\IntegerNormalizer;
 use Apie\Serializer\Normalizers\ItemListNormalizer;
 use Apie\Serializer\Normalizers\PaginatedResultNormalizer;
+use Apie\Serializer\Normalizers\PolymorphicObjectNormalizer;
 use Apie\Serializer\Normalizers\ReflectionTypeNormalizer;
 use Apie\Serializer\Normalizers\StringableCompositeValueObjectNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
@@ -39,6 +40,7 @@ class Serializer
             new PaginatedResultNormalizer(),
             new IdentifierNormalizer(),
             new StringableCompositeValueObjectNormalizer(),
+            new PolymorphicObjectNormalizer(),
             new EnumNormalizer(),
             new ValueObjectNormalizer(),
             new StringNormalizer(),
