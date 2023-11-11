@@ -42,7 +42,7 @@ class NormalizedData
         $constructorArguments = [];
         if ($constructor) {
             foreach ($constructor->getParameters() as $parameter) {
-                if (isset($this->normalizedValues[$parameter->name])) {
+                if (array_key_exists($parameter->name, $this->normalizedValues)) {
                     $constructorArguments[] = $this->normalizedValues[$parameter->name]->getNormalizedValue();
                 } else {
                     if (!$parameter->isDefaultValueAvailable()) {
