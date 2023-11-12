@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Serializer\Context;
 
+use Apie\Common\ContextConstants;
 use Apie\Core\Attributes\Context;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Exceptions\IndexNotFoundException;
@@ -8,6 +9,7 @@ use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Metadata\Concerns\UseContextKey;
+use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Serializer\Serializer;
 use Exception;
 use ReflectionIntersectionType;
@@ -46,6 +48,14 @@ final class ApieSerializerContext
             throw $lastException;
         }
         if ($typehint instanceof ReflectionNamedType) {
+            // edge case, should probably work differently then this
+            if ($input === '' && $typehint->allowsNull() && $this->apieContext->hasContext(ContextConstants::CMS)) {
+                try {
+                    $this->serializer->denormalizeNewObject($input, $typehint->getName(), $this->apieContext);
+                } catch (InvalidStringForValueObjectException) {
+                    return null;
+                }
+            }
             return $this->serializer->denormalizeNewObject($input, $typehint->getName(), $this->apieContext);
         }
         return $this->serializer->denormalizeNewObject($input, 'mixed', $this->apieContext);
