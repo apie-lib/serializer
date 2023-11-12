@@ -41,7 +41,7 @@ class NormalizeChildGroup
                 while (!empty($todoList)) {
                     /** @var FieldInterface&SetterInterface $fieldMetadata */
                     list($fieldName, $fieldMetadata) = array_pop($todoList);
-                    if (!isset($input[$fieldName])) {
+                    if (!array_key_exists($fieldName, $input)) {
                         if ($fieldMetadata->isRequired()) {
                             $validationErrors[$fieldName] = new IndexNotFoundException($fieldName);
                         }

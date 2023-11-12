@@ -28,6 +28,9 @@ final class ApieSerializerContext
 
     public function denormalizeFromTypehint(mixed $input, ReflectionType|null $typehint): mixed
     {
+        if ($input === null && (!$typehint || $typehint->allowsNull())) {
+            return null;
+        }
         if ($typehint instanceof ReflectionIntersectionType) {
             throw new InvalidTypeException($typehint, 'ReflectionNamedType|ReflectionUnionType|null');
         }
