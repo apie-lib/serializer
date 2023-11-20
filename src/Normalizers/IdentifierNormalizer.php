@@ -2,6 +2,8 @@
 namespace Apie\Serializer\Normalizers;
 
 use Apie\Common\ContextConstants;
+use Apie\Core\BoundedContext\BoundedContext;
+use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\Datalayers\ApieDatalayerWithSupport;
 use Apie\Core\Entities\EntityInterface;
@@ -16,11 +18,13 @@ class IdentifierNormalizer implements DenormalizerInterface
 {
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
+        // implementation is still buggy
+        return false;
         $apieContext = $apieSerializerContext->getContext();
         if (class_exists($desiredType) && $apieContext->hasContext(ApieDatalayer::class) && $apieContext->hasContext(ContextConstants::BOUNDED_CONTEXT_ID)) {
             $refl = new ReflectionClass($desiredType);
             $datalayer = $apieContext->getContext(ApieDatalayer::class);
-            $boundedContextId = $apieContext->getContext(ContextConstants::BOUNDED_CONTEXT_ID);
+            $boundedContextId = BoundedContextId::fromNative($apieContext->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
             return $refl->implementsInterface(IdentifierInterface::class)
                 && (!$datalayer instanceof ApieDatalayerWithSupport || $datalayer->isSupported($refl, $boundedContextId));
         }
@@ -36,8 +40,8 @@ class IdentifierNormalizer implements DenormalizerInterface
     {
         $identifier = $desiredType::fromNative($object);
         $datalayer = $apieSerializerContext->getContext()->getContext(ApieDatalayer::class);
-        $boundedContextId = $apieSerializerContext->getContext()->getContext(ContextConstants::BOUNDED_CONTEXT_ID);
-        $datalayer->find($identifier, $boundedContextId);
+        $boundedContext = $apieSerializerContext->getContext()->getContext(BoundedContext::class);
+        $datalayer->find($identifier, $boundedContext);
         return $identifier;
     }
 }
