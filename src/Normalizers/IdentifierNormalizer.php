@@ -18,10 +18,9 @@ class IdentifierNormalizer implements DenormalizerInterface
 {
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        // implementation is still buggy
-        return false;
+        // implementation is still buggy so it's deliberately not working right now
         $apieContext = $apieSerializerContext->getContext();
-        if (class_exists($desiredType) && $apieContext->hasContext(ApieDatalayer::class) && $apieContext->hasContext(ContextConstants::BOUNDED_CONTEXT_ID)) {
+        if (class_exists($desiredType) && $apieContext->hasContext('TODO') && $apieContext->hasContext(ApieDatalayer::class) && $apieContext->hasContext(ContextConstants::BOUNDED_CONTEXT_ID)) {
             $refl = new ReflectionClass($desiredType);
             $datalayer = $apieContext->getContext(ApieDatalayer::class);
             $boundedContextId = BoundedContextId::fromNative($apieContext->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
