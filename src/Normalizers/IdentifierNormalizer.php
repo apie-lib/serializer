@@ -23,7 +23,7 @@ class IdentifierNormalizer implements DenormalizerInterface
         if (class_exists($desiredType) && $apieContext->hasContext('TODO') && $apieContext->hasContext(ApieDatalayer::class) && $apieContext->hasContext(ContextConstants::BOUNDED_CONTEXT_ID)) {
             $refl = new ReflectionClass($desiredType);
             $datalayer = $apieContext->getContext(ApieDatalayer::class);
-            $boundedContextId = BoundedContextId::fromNative($apieContext->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
+            $boundedContextId = new BoundedContextId($apieContext->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
             return $refl->implementsInterface(IdentifierInterface::class)
                 && (!$datalayer instanceof ApieDatalayerWithSupport || $datalayer->isSupported($refl, $boundedContextId));
         }
