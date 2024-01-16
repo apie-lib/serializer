@@ -3,6 +3,7 @@ namespace Apie\Serializer\Normalizers;
 
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
+use Apie\Core\Utils\HashmapUtils;
 use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
@@ -36,7 +37,7 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
 
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        return $desiredType === ItemHashmap::class || $desiredType === ItemList::class;
+        return HashmapUtils::isHashmap($desiredType) || HashmapUtils::isList($desiredType);
     }
 
     public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
@@ -44,6 +45,10 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
         if (is_a($object, $desiredType, true)) {
             return $object;
         }
-        return new $desiredType(Utils::toArray($object));
+        $list = [];
+        foreach ($object as $key => $value) {
+            $list[$key] = $apieSerializerContext->denormalizeChildElement((string) $key, $value, HashmapUtils::getArrayType($desiredType));
+        }
+        return new $desiredType($list);
     }
 }
