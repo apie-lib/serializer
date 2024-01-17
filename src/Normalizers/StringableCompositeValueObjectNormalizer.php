@@ -2,6 +2,8 @@
 namespace Apie\Serializer\Normalizers;
 
 use Apie\Common\ContextConstants;
+use Apie\Core\Lists\ItemHashmap;
+use Apie\Core\Lists\ItemList;
 use Apie\Core\ValueObjects\CompositeValueObject;
 use Apie\Core\ValueObjects\Interfaces\ValueObjectInterface;
 use Apie\Serializer\Context\ApieSerializerContext;
@@ -14,11 +16,12 @@ class StringableCompositeValueObjectNormalizer implements NormalizerInterface
     public function supportsNormalization(mixed $object, ApieSerializerContext $apieSerializerContext): bool
     {
         $context = $apieSerializerContext->getContext();
-        if ($context->hasContext(ContextConstants::GET_ALL_OBJECTS) && $context->hasContext(ContextConstants::CMS)
-            && $object instanceof ValueObjectInterface
-            && $object instanceof Stringable) {
-            $refl = new ReflectionClass($object);
-            return in_array(CompositeValueObject::class, $refl->getTraitNames());
+        if ($context->hasContext(ContextConstants::GET_ALL_OBJECTS) && $context->hasContext(ContextConstants::CMS)  && $object instanceof Stringable) {
+            if ($object instanceof ValueObjectInterface) {
+                $refl = new ReflectionClass($object);
+                return in_array(CompositeValueObject::class, $refl->getTraitNames());
+            }
+            return $object instanceof ItemList || $object instanceof ItemHashmap;
         }
         return false;
     }
