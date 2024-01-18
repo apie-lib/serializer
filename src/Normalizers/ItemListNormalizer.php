@@ -4,7 +4,6 @@ namespace Apie\Serializer\Normalizers;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Utils\HashmapUtils;
-use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;

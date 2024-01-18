@@ -1,6 +1,8 @@
 services:
     Apie\Serializer\Serializer:
       factory: ['Apie\Serializer\Serializer', 'create']
+      tags:
+        - { name: 'apie.context' }
 
     Apie\Serializer\EncoderHashmap:
       factory: ['Apie\Serializer\EncoderHashmap', 'create']

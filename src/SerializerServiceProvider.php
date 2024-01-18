@@ -23,6 +23,17 @@ class SerializerServiceProvider extends ServiceProvider
                 
             }
         );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Serializer\Serializer::class,
+            array(
+              0 =>
+              array(
+                'name' => 'apie.context',
+              ),
+            )
+        );
+        $this->app->tag([\Apie\Serializer\Serializer::class], 'apie.context');
         $this->app->singleton(
             \Apie\Serializer\EncoderHashmap::class,
             function ($app) {
