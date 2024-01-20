@@ -11,6 +11,7 @@ use Apie\Core\Lists\ItemList;
 use Apie\Core\Metadata\Concerns\UseContextKey;
 use Apie\Core\Utils\ConverterUtils;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
+use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Serializer;
 use Exception;
 use ReflectionIntersectionType;
@@ -90,9 +91,22 @@ final class ApieSerializerContext
             $input = $this->serializer->denormalizeNewObject($input, ItemHashmap::class, $this->apieContext);
         }
         $result = [];
-        // TODO: validation errors
-        foreach ($method->getParameters() as $parameter) {
-            $result[] = $this->denormalizeFromParameter($input, $parameter);
+        $validationErrors = [];
+        // this construction is for performance reasons as it maintains only one try catch context.
+        $todo = $method->getParameters();
+        while (!empty($todo)) {
+            try {
+                while (!empty($todo)) {
+                    $parameter = array_shift($todo);
+                    $result[] = $this->denormalizeFromParameter($input, $parameter);
+                }
+            } catch (Exception $error) {
+                assert(isset($parameter));
+                $validationErrors[$parameter->name] = $error;
+            }
+        }
+        if (!empty($validationErrors)) {
+            throw ValidationException::createFromArray($validationErrors);
         }
         return $result;
     }
