@@ -10,6 +10,7 @@ use Apie\Core\Metadata\MetadataFactory;
 use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Context\NormalizeChildGroup;
+use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Lists\NormalizerList;
 use Apie\Serializer\Normalizers\BooleanNormalizer;
 use Apie\Serializer\Normalizers\EnumNormalizer;
@@ -23,6 +24,7 @@ use Apie\Serializer\Normalizers\ReflectionTypeNormalizer;
 use Apie\Serializer\Normalizers\StringableCompositeValueObjectNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
+use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -96,7 +98,11 @@ class Serializer
     public function denormalizeOnMethodCall(string|int|float|bool|ItemList|ItemHashmap|array|null $input, ?object $object, ReflectionMethod $method, ApieContext $apieContext): mixed
     {
         $serializerContext = new ApieSerializerContext($this, $apieContext);
-        $arguments = $serializerContext->denormalizeFromMethod($input, $method);
+        try {
+            $arguments = $serializerContext->denormalizeFromMethod($input, $method);
+        } catch (Exception $error) {
+            throw ValidationException::createFromArray(['' => $error]);
+        }
         return $method->invokeArgs($object, $arguments);
     }
 

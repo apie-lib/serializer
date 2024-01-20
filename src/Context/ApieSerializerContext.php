@@ -9,6 +9,7 @@ use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Metadata\Concerns\UseContextKey;
+use Apie\Core\Utils\ConverterUtils;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Serializer\Serializer;
 use Exception;
@@ -67,6 +68,9 @@ final class ApieSerializerContext
         $type = $parameter->getType();
         if ($parameter->getAttributes(Context::class)) {
             $contextKey = $this->getContextKey($this->apieContext, $parameter, false);
+            if ($type) {
+                return ConverterUtils::dynamicCast($this->apieContext->getContext($contextKey), $type);
+            }
             return $this->apieContext->getContext($contextKey);
         }
         if (!$parameter->isOptional() && !isset($input[$key])) {
