@@ -12,7 +12,7 @@ class FormSubmitDecoder implements DecoderInterface
         parse_str($input, $formContents);
         $data = $formContents['form'] ?? [];
         $data['_csrf'] = $formContents['_csrf'] ?? 'no csrf';
-        // TODO internal data to add missing fields that are not compatible
+        // a form field can submit hidden fields with <input name="_apie[typehint][fieldName]"> to provide a null or empty array
         foreach ($formContents['_apie']['typehint'] ?? [] as $key => $typehintData) {
             $this->fillIn($data, $key, $typehintData);
         }
@@ -31,10 +31,9 @@ class FormSubmitDecoder implements DecoderInterface
                     'int' => 0,
                     'float' => 0.0,
                     'bool' => false,
-                    'null' => null,
                     'array' => [],
                     'object' => [],
-                    default => throw new UnexpectedValueException('Expected string|int|float|bool|null|array|object, got "' . $typehintData . '"')
+                    default => null,
                 };
                 return;
             }
