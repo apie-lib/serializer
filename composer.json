@@ -22,7 +22,7 @@
   "require": {
     "php": ">=8.1",
     "apie/core": "self.version",
-    "apie/type-converter": "^1.2.0",
+    "apie/type-converter": "^1.2.1",
     "psr/http-message": "^1.0",
     "symfony/http-foundation": "^6.1"
   },
