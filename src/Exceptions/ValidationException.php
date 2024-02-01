@@ -5,11 +5,17 @@ use Apie\Core\Attributes\SchemaMethod;
 use Apie\Core\Exceptions\ApieException;
 use Apie\Core\Exceptions\HttpStatusCodeException;
 use Apie\Core\Lists\StringHashmap;
+use Apie\TypeConverter\Exceptions\GetMultipleChainedExceptionInterface;
 use Exception;
 
 #[SchemaMethod('provideSchema')]
-class ValidationException extends ApieException implements HttpStatusCodeException
+class ValidationException extends ApieException implements HttpStatusCodeException, GetMultipleChainedExceptionInterface
 {
+    /**
+     * @var array<int|string, Throwable>
+     */
+    private array $chainedExceptions = [];
+
     public function getStatusCode(): int
     {
         return 422;
@@ -21,6 +27,7 @@ class ValidationException extends ApieException implements HttpStatusCodeExcepti
         if ($errors->count() > 0) {
             $validationMessage = ':  ' . $errors->first();
         }
+        $this->chainedExceptions[] = $previous;
 
         parent::__construct('Validation error' . $validationMessage, 0, $previous);
     }
@@ -28,6 +35,11 @@ class ValidationException extends ApieException implements HttpStatusCodeExcepti
     public function getErrors(): StringHashmap
     {
         return $this->errors;
+    }
+
+    public function getChainedExceptions(): array
+    {
+        return $this->chainedExceptions;
     }
 
     /**
@@ -46,10 +58,12 @@ class ValidationException extends ApieException implements HttpStatusCodeExcepti
             $list[$property] = $error->getMessage();
         }
 
-        return new ValidationException(
+        $res = new ValidationException(
             new StringHashmap($list),
             $previous
         );
+        $res->chainedExceptions = $errors;
+        return $res;
     }
 
     /**
