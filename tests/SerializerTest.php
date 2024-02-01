@@ -32,6 +32,10 @@ use Apie\Serializer\Exceptions\ItemCanNotBeNormalizedInCurrentContext;
 use Apie\Serializer\Lists\SerializedHashmap;
 use Apie\Serializer\Lists\SerializedList;
 use Apie\Serializer\Serializer;
+use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use ReflectionClass;
@@ -80,6 +84,24 @@ class SerializerTest extends TestCase
             'blue',
             RestrictedEnum::class,
             new ApieContext(['authenticated' => true, 'locale' => 'nl'])
+        ];
+        yield 'DateTime interface' => [
+            new DateTimeImmutable('2005-08-15T15:52:01+00:00'),
+            '2005-08-15T15:52:01+00:00',
+            DateTimeInterface::class,
+            new ApieContext(),
+        ];
+        yield 'DateTime object' => [
+            new DateTime('2005-08-15T15:52:01+00:00'),
+            '2005-08-15T15:52:01+00:00',
+            DateTime::class,
+            new ApieContext(),
+        ];
+        yield 'DateTimeZone object' => [
+            new DateTimeZone('Europe/London'),
+            'Europe/London',
+            DateTimeZone::class,
+            new ApieContext(),
         ];
         $entity = new UserWithAddress(
             AddressWithZipcodeCheck::fromNative([

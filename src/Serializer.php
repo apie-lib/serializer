@@ -13,6 +13,8 @@ use Apie\Serializer\Context\NormalizeChildGroup;
 use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Lists\NormalizerList;
 use Apie\Serializer\Normalizers\BooleanNormalizer;
+use Apie\Serializer\Normalizers\DateTimeNormalizer;
+use Apie\Serializer\Normalizers\DateTimeZoneNormalizer;
 use Apie\Serializer\Normalizers\EnumNormalizer;
 use Apie\Serializer\Normalizers\FloatNormalizer;
 use Apie\Serializer\Normalizers\IdentifierNormalizer;
@@ -43,6 +45,8 @@ class Serializer
             new IdentifierNormalizer(),
             new StringableCompositeValueObjectNormalizer(),
             new PolymorphicObjectNormalizer(),
+            new DateTimeNormalizer(),
+            new DateTimeZoneNormalizer(),
             new EnumNormalizer(),
             new ValueObjectNormalizer(),
             new StringNormalizer(),
