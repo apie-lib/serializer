@@ -7,6 +7,7 @@ use Apie\Core\Exceptions\HttpStatusCodeException;
 use Apie\Core\Lists\StringHashmap;
 use Apie\TypeConverter\Exceptions\GetMultipleChainedExceptionInterface;
 use Exception;
+use Throwable;
 
 #[SchemaMethod('provideSchema')]
 class ValidationException extends ApieException implements HttpStatusCodeException, GetMultipleChainedExceptionInterface
@@ -53,6 +54,18 @@ class ValidationException extends ApieException implements HttpStatusCodeExcepti
             $previous = $error;
             if ($error instanceof ValidationException) {
                 $list = array_merge($list, $error->toArray($property));
+                continue;
+            }
+            if ($error instanceof GetMultipleChainedExceptionInterface) {
+                $list[$property] = implode(
+                    PHP_EOL,
+                    array_map(
+                        function (Throwable $error) {
+                            return $error->getMessage();
+                        },
+                        $error->getChainedExceptions()
+                    )
+                );
                 continue;
             }
             $list[$property] = $error->getMessage();
