@@ -13,6 +13,7 @@ use Apie\Core\Utils\ConverterUtils;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Serializer;
+use Apie\TypeConverter\Exceptions\CanNotConvertObjectToUnionException;
 use Exception;
 use ReflectionIntersectionType;
 use ReflectionMethod;
@@ -39,15 +40,15 @@ final class ApieSerializerContext
             throw new InvalidTypeException($typehint, 'ReflectionNamedType|ReflectionUnionType|null');
         }
         if ($typehint instanceof ReflectionUnionType) {
-            $lastException = new RuntimeException('Unknown error');
+            $exceptions = [];
             foreach ($typehint->getTypes() as $type) {
                 try {
                     return $this->serializer->denormalizeNewObject($input, $type->getName(), $this->apieContext);
                 } catch (Exception $exception) {
-                    $lastException = $exception;
+                    $exceptions[$type->getName()] = $exception;
                 }
             }
-            throw $lastException;
+            throw new CanNotConvertObjectToUnionException($input, $exceptions, $typehint);
         }
         if ($typehint instanceof ReflectionNamedType) {
             // edge case, should probably work differently then this
