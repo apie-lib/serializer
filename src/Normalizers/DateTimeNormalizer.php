@@ -29,8 +29,7 @@ final class DateTimeNormalizer implements NormalizerInterface, DenormalizerInter
         string|int|float|bool|null|ItemList|ItemHashmap $object,
         string $desiredType,
         ApieSerializerContext $apieSerializerContext
-    ): bool
-    {
+    ): bool {
         return is_a($desiredType, DateTimeInterface::class, true);
     }
 

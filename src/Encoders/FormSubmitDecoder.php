@@ -2,8 +2,6 @@
 namespace Apie\Serializer\Encoders;
 
 use Apie\Serializer\Interfaces\DecoderInterface;
-use stdClass;
-use UnexpectedValueException;
 
 class FormSubmitDecoder implements DecoderInterface
 {

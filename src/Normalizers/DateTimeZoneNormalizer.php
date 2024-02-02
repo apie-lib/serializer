@@ -7,8 +7,6 @@ use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
-use DateTimeImmutable;
-use DateTimeInterface;
 use DateTimeZone;
 
 final class DateTimeZoneNormalizer implements NormalizerInterface, DenormalizerInterface
@@ -30,8 +28,7 @@ final class DateTimeZoneNormalizer implements NormalizerInterface, DenormalizerI
         string|int|float|bool|null|ItemList|ItemHashmap $object,
         string $desiredType,
         ApieSerializerContext $apieSerializerContext
-    ): bool
-    {
+    ): bool {
         return is_a($desiredType, DateTimeZone::class, true);
     }
 

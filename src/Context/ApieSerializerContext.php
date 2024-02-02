@@ -21,7 +21,6 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
 use ReflectionUnionType;
-use RuntimeException;
 
 final class ApieSerializerContext
 {
