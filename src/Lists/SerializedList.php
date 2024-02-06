@@ -16,7 +16,7 @@ final class SerializedList extends ItemList
     /**
      * @return mixed[]|string|int|float|bool
      */
-    public function offsetGet(mixed $offset): array|string|int|float|bool|SerializedList|ItemHashmap
+    public function offsetGet(mixed $offset): array|string|int|float|bool|null|SerializedList|ItemHashmap
     {
         return parent::offsetGet($offset);
     }
