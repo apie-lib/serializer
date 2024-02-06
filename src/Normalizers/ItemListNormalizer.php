@@ -29,12 +29,6 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
         $list = [];
         foreach ($object as $key => $value) {
             $childElement = $apieSerializerContext->normalizeChildElement((string) $key, $value);
-            if ($childElement instanceof ItemList && !($object instanceof SerializedList)) {
-                $childElement = new SerializedList($childElement->toArray());
-            }
-            if ($childElement instanceof ItemHashmap && !($object instanceof SerializedHashmap)) {
-                $childElement = new SerializedHashmap($childElement->toArray());
-            }
             $list[$key] = $childElement;
         }
 
