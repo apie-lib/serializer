@@ -9,6 +9,7 @@ use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Metadata\Concerns\UseContextKey;
+use Apie\Core\TypeUtils;
 use Apie\Core\Utils\ConverterUtils;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Serializer\Exceptions\ValidationException;
@@ -51,12 +52,8 @@ final class ApieSerializerContext
         }
         if ($typehint instanceof ReflectionNamedType) {
             // edge case, should probably work differently then this
-            if ($input === '' && $typehint->allowsNull() && $this->apieContext->hasContext(ContextConstants::CMS)) {
-                try {
-                    $this->serializer->denormalizeNewObject($input, $typehint->getName(), $this->apieContext);
-                } catch (InvalidStringForValueObjectException) {
-                    return null;
-                }
+            if ($input === '' && $typehint->allowsNull() && !TypeUtils::allowEmptyString($typehint) && $this->apieContext->hasContext(ContextConstants::CMS)) {
+                return null;
             }
             return $this->serializer->denormalizeNewObject($input, $typehint->getName(), $this->apieContext);
         }
