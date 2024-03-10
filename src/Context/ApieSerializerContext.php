@@ -11,7 +11,6 @@ use Apie\Core\Lists\ItemList;
 use Apie\Core\Metadata\Concerns\UseContextKey;
 use Apie\Core\TypeUtils;
 use Apie\Core\Utils\ConverterUtils;
-use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Serializer;
 use Apie\TypeConverter\Exceptions\CanNotConvertObjectToUnionException;
