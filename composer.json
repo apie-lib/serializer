@@ -19,6 +19,12 @@
       "Apie\\Tests\\Serializer\\": "tests/"
     }
   },
+  "extra": {
+    "apie-objects": [
+      "Apie\\Serializer\\Lists\\SerializedHashmap",
+      "Apie\\Serializer\\Lists\\SerializedList"
+    ]
+  },
   "require": {
     "php": ">=8.1",
     "apie/core": "self.version",
