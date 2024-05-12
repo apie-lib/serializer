@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Serializer\Normalizers;
 
+use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Lists\ItemSet;
@@ -48,6 +49,9 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
     {
         if (is_a($object, $desiredType, true)) {
             return $object;
+        }
+        if (!is_iterable($object)) {
+            throw new InvalidTypeException($object, 'iterable');
         }
         $list = [];
         foreach ($object as $key => $value) {
