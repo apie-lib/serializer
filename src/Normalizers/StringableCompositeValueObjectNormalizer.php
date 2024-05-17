@@ -1,7 +1,7 @@
 <?php
 namespace Apie\Serializer\Normalizers;
 
-use Apie\Common\ContextConstants;
+use Apie\Core\ContextConstants;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\ValueObjects\CompositeValueObject;

@@ -1,9 +1,9 @@
 <?php
 namespace Apie\Serializer\Normalizers;
 
-use Apie\Common\ContextConstants;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextId;
+use Apie\Core\ContextConstants;
 use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\Datalayers\ApieDatalayerWithSupport;
 use Apie\Core\Entities\EntityInterface;

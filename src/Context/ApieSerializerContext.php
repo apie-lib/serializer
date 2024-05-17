@@ -1,9 +1,9 @@
 <?php
 namespace Apie\Serializer\Context;
 
-use Apie\Common\ContextConstants;
 use Apie\Core\Attributes\Context;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Core\Exceptions\IndexNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
