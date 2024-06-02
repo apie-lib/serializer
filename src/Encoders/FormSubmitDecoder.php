@@ -24,7 +24,7 @@ class FormSubmitDecoder implements DecoderInterface
             if (is_array($typehintData)) {
                 $data[$key] = [];
             } else {
-                $data[$key] = match($typehintData) {
+                $data[$key] = match ($typehintData) {
                     'string' => '',
                     'int' => 0,
                     'float' => 0.0,
