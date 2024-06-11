@@ -6,7 +6,7 @@
 
 
 
- [![Latest Stable Version](http://poser.pugx.org/apie/serializer/v)](https://packagist.org/packages/apie/serializer) [![Total Downloads](http://poser.pugx.org/apie/serializer/downloads)](https://packagist.org/packages/apie/serializer) [![Latest Unstable Version](http://poser.pugx.org/apie/serializer/v/unstable)](https://packagist.org/packages/apie/serializer) [![License](http://poser.pugx.org/apie/serializer/license)](https://packagist.org/packages/apie/serializer) [![PHP Version Require](http://poser.pugx.org/apie/serializer/require/php)](https://packagist.org/packages/apie/serializer) [![PHP Composer](https://apie-lib.github.io/projectCoverage/coverage-serializer.svg)](https://apie-lib.github.io/projectCoverage/app/packages/serializer/index.html)  
+ [![Latest Stable Version](http://poser.pugx.org/apie/serializer/v)](https://packagist.org/packages/apie/serializer) [![Total Downloads](http://poser.pugx.org/apie/serializer/downloads)](https://packagist.org/packages/apie/serializer) [![Latest Unstable Version](http://poser.pugx.org/apie/serializer/v/unstable)](https://packagist.org/packages/apie/serializer) [![License](http://poser.pugx.org/apie/serializer/license)](https://packagist.org/packages/apie/serializer) [![PHP Composer](https://apie-lib.github.io/projectCoverage/coverage-serializer.svg)](https://apie-lib.github.io/projectCoverage/app/packages/serializer/index.html)  
 
 [![PHP Composer](https://github.com/apie-lib/serializer/actions/workflows/php.yml/badge.svg?event=push)](https://github.com/apie-lib/serializer/actions/workflows/php.yml)
 
