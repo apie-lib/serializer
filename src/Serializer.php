@@ -23,6 +23,7 @@ use Apie\Serializer\Normalizers\ItemListNormalizer;
 use Apie\Serializer\Normalizers\PaginatedResultNormalizer;
 use Apie\Serializer\Normalizers\PolymorphicObjectNormalizer;
 use Apie\Serializer\Normalizers\ReflectionTypeNormalizer;
+use Apie\Serializer\Normalizers\ResourceNormalizer;
 use Apie\Serializer\Normalizers\StringableCompositeValueObjectNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
@@ -47,6 +48,7 @@ class Serializer
             new PolymorphicObjectNormalizer(),
             new DateTimeNormalizer(),
             new DateTimeZoneNormalizer(),
+            new ResourceNormalizer(),
             new EnumNormalizer(),
             new ValueObjectNormalizer(),
             new StringNormalizer(),
