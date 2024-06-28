@@ -20,6 +20,7 @@ class SerializerServiceProvider extends ServiceProvider
                 return \Apie\Serializer\Serializer::create(
                 
                 );
+                
             }
         );
         \Apie\ServiceProviderGenerator\TagMap::register(
@@ -39,6 +40,7 @@ class SerializerServiceProvider extends ServiceProvider
                 return \Apie\Serializer\EncoderHashmap::create(
                 
                 );
+                
             }
         );
         $this->app->singleton(
@@ -47,7 +49,9 @@ class SerializerServiceProvider extends ServiceProvider
                 return \Apie\Serializer\DecoderHashmap::create(
                 
                 );
+                
             }
         );
+        
     }
 }
