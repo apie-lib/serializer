@@ -9,6 +9,7 @@ use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 final class DateTimeNormalizer implements NormalizerInterface, DenormalizerInterface
 {
@@ -26,7 +27,7 @@ final class DateTimeNormalizer implements NormalizerInterface, DenormalizerInter
     }
 
     public function supportsDenormalization(
-        string|int|float|bool|null|ItemList|ItemHashmap $object,
+        string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object,
         string $desiredType,
         ApieSerializerContext $apieSerializerContext
     ): bool {
@@ -36,7 +37,7 @@ final class DateTimeNormalizer implements NormalizerInterface, DenormalizerInter
     /**
      * @param class-string<DateTimeInterface> $desiredType
      */
-    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): DateTimeInterface
+    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): DateTimeInterface
     {
         $object = Utils::toString($object);
         if ($desiredType === DateTimeInterface::class) {

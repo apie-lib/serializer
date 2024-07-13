@@ -11,6 +11,7 @@ use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
 use Exception;
+use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
 
 class ValueObjectNormalizer implements NormalizerInterface, DenormalizerInterface
@@ -27,7 +28,7 @@ class ValueObjectNormalizer implements NormalizerInterface, DenormalizerInterfac
         }
         return $value;
     }
-    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
+    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
         if (is_a($desiredType, ValueObjectInterface::class, true)) {
             $class = new ReflectionClass($desiredType);
@@ -36,7 +37,7 @@ class ValueObjectNormalizer implements NormalizerInterface, DenormalizerInterfac
         }
         return false;
     }
-    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
+    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
     {
         try {
             return $desiredType::fromNative($object);

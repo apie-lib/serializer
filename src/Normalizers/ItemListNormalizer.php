@@ -11,6 +11,7 @@ use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
 use Apie\Serializer\Lists\SerializedHashmap;
 use Apie\Serializer\Lists\SerializedList;
+use Psr\Http\Message\UploadedFileInterface;
 
 class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
 {
@@ -40,12 +41,12 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
         return $object instanceof ItemHashmap ? new SerializedHashmap($list) : new SerializedList($list);
     }
 
-    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
+    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
         return HashmapUtils::isHashmap($desiredType) || HashmapUtils::isList($desiredType) || HashmapUtils::isSet($desiredType);
     }
 
-    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
+    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
     {
         if (is_a($object, $desiredType, true)) {
             return $object;

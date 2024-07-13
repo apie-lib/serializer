@@ -10,11 +10,12 @@ use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\TypeConverter\ReflectionTypeFactory;
+use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
 
 class PolymorphicObjectNormalizer implements DenormalizerInterface
 {
-    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
+    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
         if ($object instanceof ItemHashmap && EntityUtils::isPolymorphicEntity($desiredType)) {
             $refl = new ReflectionClass($desiredType);
@@ -27,7 +28,7 @@ class PolymorphicObjectNormalizer implements DenormalizerInterface
     /**
      * @param ItemHashMap $object
      */
-    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
+    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
     {
         $refl = new ReflectionClass($desiredType);
         /** @var DiscriminatorMapping $mapping */

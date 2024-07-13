@@ -26,8 +26,10 @@ use Apie\Serializer\Normalizers\ReflectionTypeNormalizer;
 use Apie\Serializer\Normalizers\ResourceNormalizer;
 use Apie\Serializer\Normalizers\StringableCompositeValueObjectNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
+use Apie\Serializer\Normalizers\UploadedFileNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
 use Exception;
+use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -43,6 +45,7 @@ class Serializer
     {
         return new self(new NormalizerList([
             new PaginatedResultNormalizer(),
+            new UploadedFileNormalizer(),
             new IdentifierNormalizer(),
             new StringableCompositeValueObjectNormalizer(),
             new PolymorphicObjectNormalizer(),
@@ -85,6 +88,9 @@ class Serializer
             return $isList ? new ItemList($returnValue) : new ItemHashmap($returnValue);
         }
         if (!is_object($object)) {
+            if (in_array(get_debug_type($object), ['resource', 'resource (closed)'])) {
+                throw new InvalidTypeException($object, 'primitive');
+            }
             return $object;
         }
         $metadata = MetadataFactory::getResultMetadata(new ReflectionClass($object), $apieContext);
@@ -101,7 +107,7 @@ class Serializer
         return new ItemHashmap($returnValue);
     }
 
-    public function denormalizeOnMethodCall(string|int|float|bool|ItemList|ItemHashmap|array|null $input, ?object $object, ReflectionMethod $method, ApieContext $apieContext): mixed
+    public function denormalizeOnMethodCall(string|int|float|bool|ItemList|ItemHashmap|array|null|UploadedFileInterface $input, ?object $object, ReflectionMethod $method, ApieContext $apieContext): mixed
     {
         $serializerContext = new ApieSerializerContext($this, $apieContext);
         try {
@@ -112,7 +118,7 @@ class Serializer
         return $method->invokeArgs($object, $arguments);
     }
 
-    public function denormalizeNewObject(string|int|float|bool|ItemList|ItemHashmap|array|null $object, string $desiredType, ApieContext $apieContext): mixed
+    public function denormalizeNewObject(string|int|float|bool|ItemList|ItemHashmap|array|null|UploadedFileInterface $object, string $desiredType, ApieContext $apieContext): mixed
     {
         if (is_array($object)) {
             $isList = false;

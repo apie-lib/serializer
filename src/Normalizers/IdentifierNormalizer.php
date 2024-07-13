@@ -12,11 +12,12 @@ use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
+use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
 
 class IdentifierNormalizer implements DenormalizerInterface
 {
-    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
+    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
         // implementation is still buggy so it's deliberately not working right now
         $apieContext = $apieSerializerContext->getContext();
@@ -35,7 +36,7 @@ class IdentifierNormalizer implements DenormalizerInterface
      * @param class-string<T> $desiredType
      * @return T
      */
-    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): IdentifierInterface
+    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): IdentifierInterface
     {
         $identifier = $desiredType::fromNative($object);
         $datalayer = $apieSerializerContext->getContext()->getContext(ApieDatalayer::class);

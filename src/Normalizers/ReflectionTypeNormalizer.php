@@ -8,6 +8,7 @@ use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
 use Apie\TypeConverter\ReflectionTypeFactory;
+use Psr\Http\Message\UploadedFileInterface;
 use ReflectionIntersectionType;
 use ReflectionNamedType;
 use ReflectionType;
@@ -16,7 +17,7 @@ use ReflectionUnionType;
 class ReflectionTypeNormalizer implements DenormalizerInterface, NormalizerInterface
 {
     public function supportsDenormalization(
-        string|int|float|bool|null|ItemList|ItemHashmap $object,
+        string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object,
         string $desiredType,
         ApieSerializerContext $apieSerializerContext
     ): bool {
@@ -31,7 +32,7 @@ class ReflectionTypeNormalizer implements DenormalizerInterface, NormalizerInter
         );
     }
     public function denormalize(
-        string|int|float|bool|null|ItemList|ItemHashmap $object,
+        string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object,
         string $desiredType,
         ApieSerializerContext $apieSerializerContext
     ): mixed {

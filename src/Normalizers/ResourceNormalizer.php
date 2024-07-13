@@ -20,7 +20,10 @@ class ResourceNormalizer implements NormalizerInterface, DenormalizerInterface
 {
     public function supportsNormalization(mixed $object, ApieSerializerContext $apieSerializerContext): bool
     {
-        return is_resource($object) || $object instanceof UploadedFile || $object instanceof UploadedFileInterface;
+        return is_resource($object)
+            || $object instanceof UploadedFile
+            || $object instanceof UploadedFileInterface
+            || get_debug_type($object) === 'resource (closed)';
     }
 
     /**
@@ -48,12 +51,12 @@ class ResourceNormalizer implements NormalizerInterface, DenormalizerInterface
         return null;
     }
 
-    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
+    public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        return $desiredType ===  'resource';
+        return $desiredType === 'resource';
     }
 
-    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap $object, string $desiredType, ApieSerializerContext $apieSerializerContext): UnitEnum
+    public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): UnitEnum
     {
         throw new \LogicException('not implemented yet');
     }
