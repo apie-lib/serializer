@@ -5,6 +5,7 @@ use Apie\Core\Actions\ActionResponse;
 use Apie\Core\ContextConstants;
 use Apie\Core\Datalayers\Lists\PaginatedResult;
 use Apie\Core\Entities\EntityInterface;
+use Apie\Core\FileStorage\StoredFile;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\PropertyAccess;
@@ -45,6 +46,16 @@ class ResourceNormalizer implements NormalizerInterface, DenormalizerInterface
         if ($result instanceof EntityInterface) {
             $boundedContextId = $apieContext->getContext(ContextConstants::BOUNDED_CONTEXT_ID);
             $resourceClass = new ReflectionClass($apieContext->getContext(ContextConstants::RESOURCE_NAME));
+            $displayAsString = ($apieContext->hasContext(ContextConstants::GET_ALL_OBJECTS) && $apieContext->hasContext(ContextConstants::CMS))
+                || $apieContext->hasContext(ContextConstants::SHOW_PROFILE);
+            if ($displayAsString) {
+                if ($object instanceof StoredFile) {
+                    return $object->getClientFilename() ?? $object->getServerPath();
+                }
+                if (is_resource($object)) {
+                    return 'stream';
+                }
+            }
             return '/' . $boundedContextId . '/' . $resourceClass->getShortName() . '/' . $result->getId()->toNative() . '/' . implode('/', $hierarchy);
         }
         
