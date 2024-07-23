@@ -21,13 +21,7 @@ class UploadedFileNormalizer implements DenormalizerInterface
             return false;
         }
         $class = new ReflectionClass($desiredType);
-        while ($class) {
-            if ($class->name === StoredFile::class) {
-                return true;
-            }
-            $class = $class->getParentClass();
-        }
-        return false;
+        return in_array(UploadedFileInterface::class, $class->getInterfaceNames());
     }
     public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): UploadedFileInterface
     {
