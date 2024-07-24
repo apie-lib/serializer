@@ -25,6 +25,12 @@ class MultipartDecoder implements DecoderInterface
         if (!is_array($this->parsedBody) || !array_key_exists('form', $this->parsedBody)) {
             throw new IndexNotFoundException('form');
         }
-        return json_decode($this->parsedBody['form'], true);
+        $form = $this->parsedBody['form'] ?? [];
+        if (is_string($form)) {
+            $data = json_decode($form, true);
+        } else {
+            $data = (new FormSubmitDecoder())->withParsedBody($this->parsedBody)->decode(http_build_query($this->parsedBody));
+        }
+        return $data;
     }
 }
