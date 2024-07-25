@@ -28,6 +28,11 @@ class FormSubmitDecoder implements DecoderInterface
         return $data;
     }
 
+    public function requiresCsrf(): bool
+    {
+        return true;
+    }
+
     private function fillIn(array& $data, string $key, string|int|float|bool|array|null $typehintData): void
     {
         if (!isset($data[$key])) {

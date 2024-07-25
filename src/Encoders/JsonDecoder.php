@@ -19,4 +19,9 @@ class JsonDecoder implements DecoderInterface
     {
         return json_decode($input, true);
     }
+
+    public function requiresCsrf(): bool
+    {
+        return false;
+    }
 }

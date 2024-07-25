@@ -1,7 +1,7 @@
 <?php
 namespace Apie\Serializer\Encoders;
 
-use Apie\Core\Exceptions\IndexNotFoundException;
+use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Interfaces\DecoderInterface;
 
 class MultipartDecoder implements DecoderInterface
@@ -23,14 +23,20 @@ class MultipartDecoder implements DecoderInterface
     public function decode(string $input): string|int|float|bool|array|null
     {
         if (!is_array($this->parsedBody) || !array_key_exists('form', $this->parsedBody)) {
-            throw new IndexNotFoundException('form');
+            $form = [];
+        } else {
+            $form = Utils::toArray($this->parsedBody)['form'] ?? [];
         }
-        $form = $this->parsedBody['form'] ?? [];
         if (is_string($form)) {
             $data = json_decode($form, true);
         } else {
             $data = (new FormSubmitDecoder())->withParsedBody($this->parsedBody)->decode(http_build_query($this->parsedBody));
         }
         return $data;
+    }
+
+    public function requiresCsrf(): bool
+    {
+        return true;
     }
 }

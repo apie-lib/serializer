@@ -14,7 +14,6 @@ use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use UnitEnum;
 
 class ResourceNormalizer implements NormalizerInterface, DenormalizerInterface
@@ -22,13 +21,12 @@ class ResourceNormalizer implements NormalizerInterface, DenormalizerInterface
     public function supportsNormalization(mixed $object, ApieSerializerContext $apieSerializerContext): bool
     {
         return is_resource($object)
-            || $object instanceof UploadedFile
             || $object instanceof UploadedFileInterface
             || get_debug_type($object) === 'resource (closed)';
     }
 
     /**
-     * @param resource|UploadedFile|UploadedFileInterface $object
+     * @param resource|UploadedFileInterface $object
      */
     public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): ?string
     {
