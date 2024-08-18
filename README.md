@@ -14,4 +14,24 @@ This package is part of the [Apie](https://github.com/apie-lib) library.
 The code is maintained in a monorepo, so PR's need to be sent to the [monorepo](https://github.com/apie-lib/apie-lib-monorepo/pulls)
 
 ## Documentation
-This package is used internally in Apie or no documentation is available right now
+The Apie serializer serializes stored data to the customers or backwards. It is very similar to the Symfony serializer, except the context array in Symfony serializer is replaced with a ApieSerializerContext which also contains method for recursive calls. It still has the same logic related to decoding/encoding/normalizing and denormalizing.
+
+### Normalization and denormalization Usage
+The simples use is just calling the static method create or customize it with the constructor method:
+```php
+use Apie\Core\Context\ApieContext;
+use Apie\Serializer\Serializer;
+
+$serializer = Serializer::create();
+// returns new SerializedHashmap(['id' => 'example@example.com', 'password' => 'p@ssW0rd'])
+$serializer->normalize(new User('example@example.com', 'p@ssW0rd'), new ApieContext());
+// returns new User('example.com', 'p@ssW0rd')
+$serializer->denormalizeNewObject(
+    ['id' => 'example@example.com', 'password' => 'p@ssW0rd'],
+    User::class,
+    new ApieContext()
+);
+```
+### Customization
+To add your own normalization logic, you need to add a class implementing Apie\Serializer\Interfaces\NormalizerInterface. 
+To add your own denormalization logic, you need to add a class implementing Apie\Serializer\Interfaces\DenormalizerInterface.
