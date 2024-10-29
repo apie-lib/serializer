@@ -70,7 +70,6 @@ class ValidationException extends ApieException implements HttpStatusCodeExcepti
             }
             $list[$property] = $error->getMessage();
         }
-
         $res = new ValidationException(
             new StringHashmap($list),
             $previous
@@ -93,10 +92,10 @@ class ValidationException extends ApieException implements HttpStatusCodeExcepti
         return $newList;
     }
 
-    private static function mergeProperty(string $prefix, string $property): string
+    private static function mergeProperty(string $prefix, string|int $property): string
     {
         if ($prefix) {
-            return $property ? ($prefix . '.' . $property) : $prefix;
+            return ($property || $property === 0 || $property === '0') ? ($prefix . '.' . $property) : $prefix;
         }
         return $property;
     }

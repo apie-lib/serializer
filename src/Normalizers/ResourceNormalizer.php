@@ -20,6 +20,9 @@ class ResourceNormalizer implements NormalizerInterface, DenormalizerInterface
 {
     public function supportsNormalization(mixed $object, ApieSerializerContext $apieSerializerContext): bool
     {
+        if (!$apieSerializerContext->getContext()->hasContext(ActionResponse::class)) {
+            return false;
+        }
         return is_resource($object)
             || $object instanceof UploadedFileInterface
             || get_debug_type($object) === 'resource (closed)';

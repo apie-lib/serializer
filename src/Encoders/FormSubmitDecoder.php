@@ -19,12 +19,26 @@ class FormSubmitDecoder implements DecoderInterface
     {
         parse_str($input, $formContents);
         $data = $formContents['form'] ?? [];
-        $data['_csrf'] = $formContents['_csrf'] ?? 'no csrf';
+        
         // a form field can submit hidden fields with <input name="_apie[typehint][fieldName]"> to provide a null or empty array
-        foreach ($formContents['_apie']['typehint'] ?? [] as $key => $typehintData) {
-            $this->fillIn($data, $key, $typehintData);
+        $typehints = $formContents['_apie'] ?? [];
+        if (is_string($typehints)) {
+            return match ($typehints) {
+                'string' => '',
+                'int' => 0,
+                'float' => 0.0,
+                'bool' => false,
+                'array' => ['_csrf' => $formContents['_csrf'] ?? 'no csrf'],
+                'object' => ['_csrf' => $formContents['_csrf'] ?? 'no csrf'],
+                default => null,
+            };
         }
-
+        if (is_array($typehints)) {
+            foreach ($typehints as $key => $typehintData) {
+                $this->fillIn($data, $key, $typehintData);
+            }
+        }
+        $data['_csrf'] = $formContents['_csrf'] ?? 'no csrf';
         return $data;
     }
 
