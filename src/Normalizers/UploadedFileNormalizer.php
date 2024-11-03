@@ -1,9 +1,12 @@
 <?php
 namespace Apie\Serializer\Normalizers;
 
+use Apie\Core\ContextConstants;
+use Apie\Core\Enums\DoNotChangeUploadedFile;
 use Apie\Core\FileStorage\StoredFile;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
+use Apie\Core\PropertyAccess;
 use Apie\Core\ValueObjects\JsonFileUpload;
 use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
@@ -33,6 +36,13 @@ class UploadedFileNormalizer implements DenormalizerInterface
                 throw new FileUploadException($object);
             }
             return $object;
+        }
+        // we submit a special 'DoNotChange' string on edits to avoid having to submit a
+        // new file all the time.
+        if ($object === DoNotChangeUploadedFile::DoNotChange->value) {
+            $hierarchy = $apieSerializerContext->getContext()->getContext('hierarchy', false) ?? [];
+            $resource = $apieSerializerContext->getContext()->getContext(ContextConstants::RESOURCE);
+            return PropertyAccess::getPropertyValue($resource, $hierarchy, $apieSerializerContext->getContext());
         }
         $array = Utils::toArray($object);
         /** @var JsonFileUpload $object */

@@ -57,7 +57,7 @@ class NormalizeChildGroup
                         throw new ThisIsNotAFieldException($fieldName);
                     }
                     $built[$fieldName] = new NormalizedValue(
-                        $this->serializerContext->denormalizeFromTypehint(
+                        $this->serializerContext->visit($fieldName)->denormalizeFromTypehint(
                             $input[$fieldName],
                             $fieldMetadata->getTypehint()
                         ),

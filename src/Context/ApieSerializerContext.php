@@ -26,6 +26,8 @@ final class ApieSerializerContext
 {
     use UseContextKey;
 
+    private ?ApieSerializerContext $parentState = null;
+
     public function __construct(private Serializer $serializer, private ApieContext $apieContext)
     {
     }
@@ -81,7 +83,7 @@ final class ApieSerializerContext
         if ($type === null || ((string) $type) === 'mixed' || !isset($input[$key])) {
             return $input[$key] ?? $defaultValue;
         }
-        $newContext = new self($this->serializer, $this->createChildContext($key));
+        $newContext = $this->visit($key);
         return $newContext->denormalizeFromTypehint($input[$key], $type);
     }
 
@@ -128,7 +130,7 @@ final class ApieSerializerContext
         return $this->serializer->normalize($object, $newContext);
     }
 
-    public function createChildContext(string $key): ApieContext
+    private function createChildContext(string $key): ApieContext
     {
         $hierarchy = [];
         if ($this->apieContext->hasContext('hierarchy')) {
@@ -136,6 +138,19 @@ final class ApieSerializerContext
         }
         $hierarchy[] = $key;
         return $this->apieContext->withContext('hierarchy', $hierarchy);
+    }
+
+    public function visit(string $key): self
+    {
+        $childContext = $this->createChildContext($key);
+        $res = new ApieSerializerContext($this->serializer, $childContext);
+        $res->parentState = $this;
+        return $res;
+    }
+
+    public function getParentState(): ?self
+    {
+        return $this->parentState;
     }
 
     public function getContext(): ApieContext

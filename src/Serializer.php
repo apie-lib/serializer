@@ -15,6 +15,7 @@ use Apie\Serializer\Lists\NormalizerList;
 use Apie\Serializer\Normalizers\BooleanNormalizer;
 use Apie\Serializer\Normalizers\DateTimeNormalizer;
 use Apie\Serializer\Normalizers\DateTimeZoneNormalizer;
+use Apie\Serializer\Normalizers\DoNotChangeFileNormalizer;
 use Apie\Serializer\Normalizers\EnumNormalizer;
 use Apie\Serializer\Normalizers\FloatNormalizer;
 use Apie\Serializer\Normalizers\IdentifierNormalizer;
@@ -45,6 +46,7 @@ class Serializer
     {
         return new self(new NormalizerList([
             new PaginatedResultNormalizer(),
+            new DoNotChangeFileNormalizer(),
             new UploadedFileNormalizer(),
             new IdentifierNormalizer(),
             new StringableCompositeValueObjectNormalizer(),
@@ -164,10 +166,6 @@ class Serializer
     public function denormalizeOnExistingObject(ItemHashmap $object, object $existingObject, ApieContext $apieContext): mixed
     {
         $refl = new ReflectionClass($existingObject);
-        $metadata = MetadataFactory::getCreationMetadata(
-            $refl,
-            $apieContext
-        );
         $serializerContext = new ApieSerializerContext($this, $apieContext);
         $metadata = MetadataFactory::getModificationMetadata(
             $refl,
