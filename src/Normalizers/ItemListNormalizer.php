@@ -45,7 +45,7 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
 
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        return HashmapUtils::isHashmap($desiredType) || HashmapUtils::isList($desiredType) || HashmapUtils::isSet($desiredType);
+        return $desiredType === 'array' || HashmapUtils::isHashmap($desiredType) || HashmapUtils::isList($desiredType) || HashmapUtils::isSet($desiredType);
     }
 
     public function denormalize(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): mixed
@@ -80,6 +80,6 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
         if (!empty($validationErrors)) {
             throw ValidationException::createFromArray($validationErrors);
         }
-        return new $desiredType($list);
+        return $desiredType === 'array' ? $list : new $desiredType($list);
     }
 }

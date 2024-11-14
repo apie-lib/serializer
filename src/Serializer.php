@@ -7,6 +7,7 @@ use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Metadata\Concerns\UseContextKey;
 use Apie\Core\Metadata\MetadataFactory;
+use Apie\Core\Utils\ConverterUtils;
 use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Context\NormalizeChildGroup;
@@ -147,8 +148,8 @@ class Serializer
                 return $denormalizer->denormalize($object, $desiredType, $serializerContext);
             }
         }
-        $refl = new ReflectionClass($desiredType);
-        if (!$refl->isInstantiable()) {
+        $refl = ConverterUtils::toReflectionClass($desiredType);
+        if (!$refl || !$refl->isInstantiable()) {
             throw new InvalidTypeException($desiredType, 'a instantiable object');
         }
         $metadata = MetadataFactory::getCreationMetadata(
