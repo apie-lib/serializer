@@ -57,7 +57,7 @@ class ResourceNormalizer implements NormalizerInterface, DenormalizerInterface
                     return 'stream';
                 }
             }
-            return '/' . $boundedContextId . '/' . $resourceClass->getShortName() . '/' . $result->getId()->toNative() . '/' . implode('/', $hierarchy);
+            return '/' . $boundedContextId . '/' . $resourceClass->getShortName() . '/' . $result->getId()->toNative() . '/download/' . implode('/', $hierarchy);
         }
         
         return null;
