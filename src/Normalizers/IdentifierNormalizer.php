@@ -19,9 +19,10 @@ class IdentifierNormalizer implements DenormalizerInterface
 {
     public function supportsDenormalization(string|int|float|bool|null|ItemList|ItemHashmap|UploadedFileInterface $object, string $desiredType, ApieSerializerContext $apieSerializerContext): bool
     {
-        // implementation is still buggy so it's deliberately not working right now
         $apieContext = $apieSerializerContext->getContext();
-        if (class_exists($desiredType) && $apieContext->hasContext('TODO') && $apieContext->hasContext(ApieDatalayer::class) && $apieContext->hasContext(ContextConstants::BOUNDED_CONTEXT_ID)) {
+        $hierarchy = $apieContext->getContext('hierarchy', false) ?? [];
+        $fieldName = array_pop($hierarchy);
+        if (class_exists($desiredType) && $fieldName !== 'id' && $apieContext->hasContext(ApieDatalayer::class) && $apieContext->hasContext(ContextConstants::BOUNDED_CONTEXT_ID)) {
             $refl = new ReflectionClass($desiredType);
             $datalayer = $apieContext->getContext(ApieDatalayer::class);
             $boundedContextId = new BoundedContextId($apieContext->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
@@ -40,8 +41,8 @@ class IdentifierNormalizer implements DenormalizerInterface
     {
         $identifier = $desiredType::fromNative($object);
         $datalayer = $apieSerializerContext->getContext()->getContext(ApieDatalayer::class);
-        $boundedContext = $apieSerializerContext->getContext()->getContext(BoundedContext::class);
-        $datalayer->find($identifier, $boundedContext);
+        $boundedContextId = $apieSerializerContext->getContext()->getContext(ContextConstants::BOUNDED_CONTEXT_ID);
+        $datalayer->find($identifier, BoundedContextId::fromNative($boundedContextId));
         return $identifier;
     }
 }
