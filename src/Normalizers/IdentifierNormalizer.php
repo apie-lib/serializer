@@ -1,7 +1,6 @@
 <?php
 namespace Apie\Serializer\Normalizers;
 
-use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\ContextConstants;
 use Apie\Core\Datalayers\ApieDatalayer;
