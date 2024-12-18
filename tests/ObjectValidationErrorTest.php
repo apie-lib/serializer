@@ -45,7 +45,6 @@ class ObjectValidationErrorTest extends TestCase
         $actual = $serializer->normalize($error, new ApieContext());
         $expected = new ItemHashmap([
             'message' => 'Validation error:  This is an error',
-            'statusCode' => 422,
             'code' => 0,
             'errors' => new SerializedHashmap([
                 'error' => 'This is an error',

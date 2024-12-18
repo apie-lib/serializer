@@ -7,6 +7,7 @@ use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\Datalayers\Lists\PaginatedResult;
 use Apie\Core\Datalayers\Search\QuerySearch;
 use Apie\Core\Datalayers\ValueObjects\LazyLoadedListIdentifier;
+use Apie\Core\Exceptions\ActionNotAllowedException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;

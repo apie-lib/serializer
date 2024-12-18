@@ -5,6 +5,7 @@ use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Lists\ItemSet;
+use Apie\Core\Lists\PermissionList;
 use Apie\Core\Utils\HashmapUtils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Exceptions\ValidationException;
@@ -34,6 +35,9 @@ class ItemListNormalizer implements NormalizerInterface, DenormalizerInterface
      */
     public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): SerializedList|SerializedHashmap
     {
+        if ($object instanceof PermissionList) {
+            $object = $object->toStringList();
+        }
         $list = [];
         foreach ($object as $key => $value) {
             $childElement = $apieSerializerContext->normalizeChildElement((string) $key, $value);

@@ -104,6 +104,7 @@ class ValidationException extends ApieException implements HttpStatusCodeExcepti
     {
         return [
             'type' => 'object',
+            'required' => ['message', 'errors'],
             'properties' => [
                 'message' => [
                     'type' => 'string',
