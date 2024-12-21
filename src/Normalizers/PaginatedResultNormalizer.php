@@ -28,6 +28,7 @@ class PaginatedResultNormalizer implements NormalizerInterface
         return new ItemHashmap(array_filter(
             [
                 'totalCount' => $object->totalCount,
+                'filteredCount' => $object->filteredCount,
                 'list' => $apieSerializerContext->normalizeAgain($object->list),
                 'first' => $this->renderFirst($uri, $object),
                 'last' => $this->renderLast($uri, $object),

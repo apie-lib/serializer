@@ -7,7 +7,6 @@ use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\Datalayers\Lists\PaginatedResult;
 use Apie\Core\Datalayers\Search\QuerySearch;
 use Apie\Core\Datalayers\ValueObjects\LazyLoadedListIdentifier;
-use Apie\Core\Exceptions\ActionNotAllowedException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
@@ -287,7 +286,8 @@ class SerializerTest extends TestCase
         ];
         yield 'Pagination result' => [
             new ItemHashmap([
-                'totalCount' => 1,
+                'totalCount' => 2,
+                'filteredCount' => 1,
                 'list' => new SerializedList(
                     [
                         new ItemHashmap([
@@ -306,6 +306,7 @@ class SerializerTest extends TestCase
             ]),
             new PaginatedResult(
                 LazyLoadedListIdentifier::createFrom(new BoundedContextId('default'), new ReflectionClass($entity)),
+                2,
                 1,
                 new ItemList([$entity]),
                 0,
