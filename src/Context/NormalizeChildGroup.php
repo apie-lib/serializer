@@ -65,6 +65,7 @@ class NormalizeChildGroup
                     );
                 }
             } catch (Exception $error) {
+                // @phpstan-ignore variable.undefined
                 $validationErrors[$fieldName] = $error;
             }
         }

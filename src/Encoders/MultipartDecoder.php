@@ -6,7 +6,7 @@ use Apie\Serializer\Interfaces\DecoderInterface;
 
 class MultipartDecoder implements DecoderInterface
 {
-    private array|object|null $parsedBody = null;
+    private array|null $parsedBody = null;
 
     public function withParsedBody(null|array|object $parsedBody): DecoderInterface
     {

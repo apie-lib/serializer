@@ -35,6 +35,7 @@ class FormSubmitDecoder implements DecoderInterface
                 default => null,
             };
         }
+        // @phpstan-ignore function.alreadyNarrowedType
         if (is_array($typehints)) {
             foreach ($typehints as $key => $typehintData) {
                 $this->fillIn($data, $key, $typehintData);

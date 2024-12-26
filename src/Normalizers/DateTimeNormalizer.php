@@ -21,7 +21,7 @@ final class DateTimeNormalizer implements NormalizerInterface, DenormalizerInter
     /**
      * @param DateTimeInterface $object
      */
-    public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): string|int
+    public function normalize(mixed $object, ApieSerializerContext $apieSerializerContext): string
     {
         return $object->format(DateTimeInterface::ATOM);
     }

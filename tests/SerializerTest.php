@@ -38,6 +38,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophet;
 use ReflectionClass;
 
 class SerializerTest extends TestCase
@@ -49,17 +50,15 @@ class SerializerTest extends TestCase
         return Serializer::create();
     }
 
-    /**
-     * @dataProvider denormalizeProvider
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('denormalizeProvider')]
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_denormalize_objects(object $expected, mixed $input, string $desiredType, ApieContext $apieContext)
     {
         $serializer = $this->givenASerializer();
         $this->assertEquals($expected, $serializer->denormalizeNewObject($input, $desiredType, $apieContext));
     }
 
-    public function denormalizeProvider()
+    public static function denormalizeProvider()
     {
         yield 'string enum' => [
             ColorEnum::RED,
@@ -182,7 +181,8 @@ class SerializerTest extends TestCase
 
         $orderIdentifier = OrderIdentifier::createRandom();
         $order = new Order($orderIdentifier, new OrderLineList([]));
-        $dataLayer = $this->prophesize(ApieDatalayer::class);
+        $prophet = new Prophet();
+        $dataLayer = $prophet->prophesize(ApieDatalayer::class);
         $dataLayer->find($orderIdentifier)->willReturn($order);
 
         yield 'Identifier with data layer check' => [
@@ -195,10 +195,8 @@ class SerializerTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider normalizeProvider
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('normalizeProvider')]
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_normalize_objects(string|int|ItemHashmap|ItemList $expected, object $input, ApieContext $apieContext)
     {
         $serializer = $this->givenASerializer();
@@ -206,7 +204,7 @@ class SerializerTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function normalizeProvider()
+    public static function normalizeProvider()
     {
         yield 'string enum' => [
             'red',
@@ -317,24 +315,16 @@ class SerializerTest extends TestCase
         ];
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function empty_enums_always_fail()
     {
-        $refl = new ReflectionClass(EmptyEnum::class);
-        if ($refl->isInstantiable()) {
-            $this->markTestSkipped('Used old version of PHP8.1 where this test fails. See https://github.com/php/php-src/issues/8583');
-        }
         $serializer = $this->givenASerializer();
         $this->expectException(InvalidTypeException::class);
         $serializer->denormalizeNewObject(null, EmptyEnum::class, new ApieContext());
     }
 
-    /**
-     * @dataProvider invalidEnumsProvider
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalidEnumsProvider')]
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_refuse_enum_values_if_apie_context_is_missing(mixed $input, ApieContext $apieContext)
     {
         $serializer = $this->givenASerializer();
@@ -342,7 +332,7 @@ class SerializerTest extends TestCase
         $serializer->denormalizeNewObject($input, RestrictedEnum::class, $apieContext);
     }
 
-    public function invalidEnumsProvider()
+    public static function invalidEnumsProvider()
     {
         yield 'misses authenticated context' => ['green', new ApieContext()];
         // yield 'incorrect locale value' => ['red', new ApieContext(['locale' => 'gb'])]; TODO
