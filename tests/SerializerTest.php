@@ -23,10 +23,13 @@ use Apie\Fixtures\Enums\Gender;
 use Apie\Fixtures\Enums\IntEnum;
 use Apie\Fixtures\Enums\NoValueEnum;
 use Apie\Fixtures\Enums\RestrictedEnum;
+use Apie\Fixtures\FuturePhpVersion;
 use Apie\Fixtures\Identifiers\CollectionItemOwnedIdentifier;
 use Apie\Fixtures\Identifiers\OrderIdentifier;
 use Apie\Fixtures\Identifiers\UserWithAddressIdentifier;
 use Apie\Fixtures\Lists\OrderLineList;
+use Apie\Fixtures\Php84\AsyncVisibility;
+use Apie\Fixtures\Php84\PropertyHooks;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
 use Apie\Serializer\Exceptions\ItemCanNotBeNormalizedInCurrentContext;
 use Apie\Serializer\Lists\SerializedHashmap;
@@ -193,6 +196,36 @@ class SerializerTest extends TestCase
                 ApieDatalayer::class => $dataLayer,
             ])
         ];
+
+        if (PHP_VERSION_ID >= 80400) {
+            FuturePhpVersion::loadPhp84Classes();
+            yield 'PHP 8.4 object with async visibility' => [
+                new AsyncVisibility('test', 'option'),
+                [
+                    'name' => 'test',
+                    'option' => 'option',
+                ],
+                AsyncVisibility::class,
+                new ApieContext(),
+            ];
+            yield 'PHP 8.4 object with property hooks' => [
+                new PropertyHooks('test'),
+                [
+                    'name' => 'test',
+                ],
+                PropertyHooks::class,
+                new ApieContext(),
+            ];
+            yield 'PHP 8.4 object with property hooks virtual property' => [
+                new PropertyHooks('Override'),
+                [
+                    'name' => 'test',
+                    'virtualSetter' => 'override',
+                ],
+                PropertyHooks::class,
+                new ApieContext(),
+            ];
+        }
     }
 
     #[\PHPUnit\Framework\Attributes\DataProvider('normalizeProvider')]
@@ -313,6 +346,23 @@ class SerializerTest extends TestCase
             ),
             new ApieContext()
         ];
+
+        if (PHP_VERSION_ID >= 80400) {
+            FuturePhpVersion::loadPhp84Classes();
+            yield 'PHP 8.4 object with async visibility' => [
+                new ItemHashmap([
+                    'name' => 'test',
+                    'option' => 'option',
+                ]),
+                new AsyncVisibility('test', 'option'),
+                new ApieContext(),
+            ];
+            yield 'PHP 8.4 object with property hooks' => [
+                new ItemHashmap(['name' => 'test', 'virtual' => 'This is an example']),
+                new PropertyHooks('test'),
+                new ApieContext(),
+            ];
+        }
     }
 
     #[\PHPUnit\Framework\Attributes\Test]

@@ -66,11 +66,13 @@ class NormalizedData
         foreach ($this->normalizedValues as $normalizedValue) {
             $value = $normalizedValue->getNormalizedValue();
             $fieldMetadata = $normalizedValue->getFieldMetadata();
-            $fieldMetadata->setValue(
-                $object,
-                $value,
-                $this->apieContext
-            );
+            if ($fieldMetadata->isField()) {
+                $fieldMetadata->setValue(
+                    $object,
+                    $value,
+                    $this->apieContext
+                );
+            }
         }
         return $object;
     }
