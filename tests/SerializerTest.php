@@ -11,6 +11,7 @@ use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Fixtures\Dto\DefaultExampleDto;
+use Apie\Fixtures\Dto\DtoWithPromotedProperties;
 use Apie\Fixtures\Dto\ExampleDto;
 use Apie\Fixtures\Entities\CollectionItemOwned;
 use Apie\Fixtures\Entities\Order;
@@ -168,6 +169,15 @@ class SerializerTest extends TestCase
                 'gender' => 'M',
             ],
             ExampleDto::class,
+            new ApieContext()
+        ];
+        yield 'DTO with promoted properties and default value' => [
+            new DtoWithPromotedProperties(
+                null,
+                null
+            ),
+            [],
+            DtoWithPromotedProperties::class,
             new ApieContext()
         ];
 
