@@ -10,6 +10,8 @@ use Apie\Core\Datalayers\ValueObjects\LazyLoadedListIdentifier;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
+use Apie\Core\Permissions\PermissionInterface;
+use Apie\Core\Permissions\SerializedPermission;
 use Apie\Fixtures\Dto\DefaultExampleDto;
 use Apie\Fixtures\Dto\DtoWithPromotedProperties;
 use Apie\Fixtures\Dto\ExampleDto;
@@ -205,6 +207,13 @@ class SerializerTest extends TestCase
             new ApieContext([
                 ApieDatalayer::class => $dataLayer,
             ])
+        ];
+
+        yield 'Object alias' => [
+            new SerializedPermission('test'),
+            'test',
+            PermissionInterface::class,
+            new ApieContext()
         ];
 
         if (PHP_VERSION_ID >= 80400) {

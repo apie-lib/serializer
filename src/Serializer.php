@@ -13,6 +13,7 @@ use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Context\NormalizeChildGroup;
 use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Lists\NormalizerList;
+use Apie\Serializer\Normalizers\AliasDenormalizer;
 use Apie\Serializer\Normalizers\BooleanNormalizer;
 use Apie\Serializer\Normalizers\DateTimeNormalizer;
 use Apie\Serializer\Normalizers\DateTimeZoneNormalizer;
@@ -23,6 +24,7 @@ use Apie\Serializer\Normalizers\IdentifierNormalizer;
 use Apie\Serializer\Normalizers\IntegerNormalizer;
 use Apie\Serializer\Normalizers\ItemListNormalizer;
 use Apie\Serializer\Normalizers\PaginatedResultNormalizer;
+use Apie\Serializer\Normalizers\PermissionListNormalizer;
 use Apie\Serializer\Normalizers\PolymorphicObjectNormalizer;
 use Apie\Serializer\Normalizers\ReflectionTypeNormalizer;
 use Apie\Serializer\Normalizers\ResourceNormalizer;
@@ -46,8 +48,10 @@ class Serializer
     public static function create(): self
     {
         return new self(new NormalizerList([
+            new AliasDenormalizer(),
             new PaginatedResultNormalizer(),
             new DoNotChangeFileNormalizer(),
+            new PermissionListNormalizer(),
             new UploadedFileNormalizer(),
             new IdentifierNormalizer(),
             new StringableCompositeValueObjectNormalizer(),
