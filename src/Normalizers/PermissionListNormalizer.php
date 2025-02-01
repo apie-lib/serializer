@@ -5,7 +5,6 @@ namespace Apie\Serializer\Normalizers;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Lists\PermissionList;
-use Apie\Core\Permissions\PermissionInterface;
 use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
