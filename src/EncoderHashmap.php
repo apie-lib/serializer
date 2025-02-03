@@ -28,6 +28,7 @@ final class EncoderHashmap extends ItemHashmap
         if (empty($this->internalArray)) {
             throw new LogicException('I am an encoder hashmap with no encoders?');
         }
+    
         if (!$request->hasHeader('Accept')) {
             reset($this->internalArray);
             return key($this->internalArray);
@@ -39,6 +40,10 @@ final class EncoderHashmap extends ItemHashmap
             if (isset($this->internalArray[$acceptHeaderValue])) {
                 return $acceptHeaderValue;
             }
+        }
+        if (strtolower($request->getMethod()) === 'delete') {
+            reset($this->internalArray);
+            return key($this->internalArray) ? : 'application/json';
         }
         throw new NotAcceptedException($acceptString);
     }
