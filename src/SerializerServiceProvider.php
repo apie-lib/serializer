@@ -18,7 +18,7 @@ class SerializerServiceProvider extends ServiceProvider
             \Apie\Serializer\Serializer::class,
             function ($app) {
                 return \Apie\Serializer\Serializer::create(
-                
+                    $this->getTaggedServicesIterator(\Apie\Serializer\Serializer::class)
                 );
                 
             }

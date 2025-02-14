@@ -1,6 +1,8 @@
 services:
     Apie\Serializer\Serializer:
       factory: ['Apie\Serializer\Serializer', 'create']
+      arguments:
+          - !tagged_iterator Apie\Serializer\Serializer
       tags:
         - { name: 'apie.context' }
 
