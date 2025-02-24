@@ -12,6 +12,8 @@ use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Context\NormalizeChildGroup;
 use Apie\Serializer\Exceptions\ValidationException;
+use Apie\Serializer\FieldFilters\FieldFilterInterface;
+use Apie\Serializer\FieldFilters\NoFiltering;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
 use Apie\Serializer\Lists\NormalizerList;
@@ -86,10 +88,14 @@ class Serializer
                 }
             }
         }
+
+        $fieldFilter = $apieContext->getContext(FieldFilterInterface::class, false) ? : new NoFiltering();
+
         if (is_array($object)) {
             $count = 0;
             $returnValue = [];
             $isList = true;
+            // TODO: should a field filter have effect on arrays?
             foreach ($object as $key => $value) {
                 if ($key === $count) {
                     $count++;
@@ -110,7 +116,7 @@ class Serializer
         $returnValue = [];
 
         foreach ($metadata->getHashmap()->filterOnContext($apieContext, getters: true) as $fieldName => $metadata) {
-            if ($metadata->isField()) {
+            if ($metadata->isField() && $fieldFilter->isFiltered($fieldName)) {
                 $returnValue[$fieldName] = $serializerContext->normalizeChildElement(
                     $fieldName,
                     $metadata->getValue($object, $apieContext)

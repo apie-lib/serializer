@@ -12,6 +12,8 @@ use Apie\Core\Metadata\Concerns\UseContextKey;
 use Apie\Core\TypeUtils;
 use Apie\Core\Utils\ConverterUtils;
 use Apie\Serializer\Exceptions\ValidationException;
+use Apie\Serializer\FieldFilters\FieldFilterInterface;
+use Apie\Serializer\FieldFilters\NoFiltering;
 use Apie\Serializer\Serializer;
 use Apie\TypeConverter\Exceptions\CanNotConvertObjectToUnionException;
 use Exception;
@@ -137,6 +139,8 @@ final class ApieSerializerContext
             $hierarchy = $this->apieContext->getContext('hierarchy');
         }
         $hierarchy[] = $key;
+        $fieldFilter = $this->apieContext->getContext(FieldFilterInterface::class, false) ? : new NoFiltering();
+        $this->apieContext->withContext(FieldFilterInterface::class, $fieldFilter->followField($key));
         return $this->apieContext->withContext('hierarchy', $hierarchy);
     }
 
