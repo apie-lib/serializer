@@ -31,11 +31,14 @@ use Apie\Serializer\Normalizers\PaginatedResultNormalizer;
 use Apie\Serializer\Normalizers\PermissionListNormalizer;
 use Apie\Serializer\Normalizers\PolymorphicObjectNormalizer;
 use Apie\Serializer\Normalizers\ReflectionTypeNormalizer;
+use Apie\Serializer\Normalizers\RelationNormalizer;
 use Apie\Serializer\Normalizers\ResourceNormalizer;
 use Apie\Serializer\Normalizers\StringableCompositeValueObjectNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\UploadedFileNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
+use Apie\Serializer\Relations\EmbedRelationInterface;
+use Apie\Serializer\Relations\NoRelationEmbedded;
 use Exception;
 use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
@@ -60,6 +63,7 @@ class Serializer
             new PaginatedResultNormalizer(),
             new DoNotChangeFileNormalizer(),
             new PermissionListNormalizer(),
+            new RelationNormalizer(),
             new UploadedFileNormalizer(),
             new IdentifierNormalizer(),
             new StringableCompositeValueObjectNormalizer(),
@@ -90,6 +94,7 @@ class Serializer
         }
 
         $fieldFilter = $apieContext->getContext(FieldFilterInterface::class, false) ? : new NoFiltering();
+        $relationEmbedder = $apieContext->getContext(EmbedRelationInterface::class, false) ? : new NoRelationEmbedded();
 
         if (is_array($object)) {
             $count = 0;

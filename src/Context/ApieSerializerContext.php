@@ -14,6 +14,8 @@ use Apie\Core\Utils\ConverterUtils;
 use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\FieldFilters\FieldFilterInterface;
 use Apie\Serializer\FieldFilters\NoFiltering;
+use Apie\Serializer\Relations\EmbedRelationInterface;
+use Apie\Serializer\Relations\NoRelationEmbedded;
 use Apie\Serializer\Serializer;
 use Apie\TypeConverter\Exceptions\CanNotConvertObjectToUnionException;
 use Exception;
@@ -134,14 +136,19 @@ final class ApieSerializerContext
 
     private function createChildContext(string $key): ApieContext
     {
+        $context = $this->apieContext;
         $hierarchy = [];
-        if ($this->apieContext->hasContext('hierarchy')) {
-            $hierarchy = $this->apieContext->getContext('hierarchy');
+        if ($context->hasContext('hierarchy')) {
+            $hierarchy = $context->getContext('hierarchy');
         }
         $hierarchy[] = $key;
-        $fieldFilter = $this->apieContext->getContext(FieldFilterInterface::class, false) ? : new NoFiltering();
-        $this->apieContext->withContext(FieldFilterInterface::class, $fieldFilter->followField($key));
-        return $this->apieContext->withContext('hierarchy', $hierarchy);
+        $fieldFilter = $context->getContext(FieldFilterInterface::class, false) ? : new NoFiltering();
+        $context = $context->withContext(FieldFilterInterface::class, $fieldFilter->followField($key));
+
+        $relationFilter = $context->getContext(EmbedRelationInterface::class, false) ? : new NoRelationEmbedded();
+        $context = $context->withContext(EmbedRelationInterface::class, $relationFilter->followField($key));
+
+        return $context->withContext('hierarchy', $hierarchy);
     }
 
     public function visit(string $key): self

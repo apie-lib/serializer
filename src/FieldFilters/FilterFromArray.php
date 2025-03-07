@@ -2,6 +2,7 @@
 namespace Apie\Serializer\FieldFilters;
 
 use Apie\Core\Lists\StringList;
+use Apie\Core\Lists\StringSet;
 
 final class FilterFromArray implements FieldFilterInterface
 {
@@ -26,7 +27,7 @@ final class FilterFromArray implements FieldFilterInterface
         return new NoFiltering();
     }
 
-    public static function createFromArray(StringList $fieldNames): FieldFilterInterface
+    public static function createFromArray(StringList|StringSet $fieldNames): FieldFilterInterface
     {
         if ($fieldNames->count() === 0) {
             return new NoFiltering();
