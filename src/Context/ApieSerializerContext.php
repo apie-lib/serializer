@@ -83,7 +83,10 @@ final class ApieSerializerContext
         if (!$parameter->isOptional() && !isset($input[$key])) {
             throw new IndexNotFoundException($key);
         }
-        $defaultValue = $parameter->isOptional() ? $parameter->getDefaultValue() : null;
+        $defaultValue = null;
+        if ($parameter->isDefaultValueAvailable()) {
+            $defaultValue = $parameter->getDefaultValue();
+        }
         if ($type === null || ((string) $type) === 'mixed' || !isset($input[$key])) {
             return $input[$key] ?? $defaultValue;
         }
@@ -104,7 +107,15 @@ final class ApieSerializerContext
             try {
                 while (!empty($todo)) {
                     $parameter = array_shift($todo);
-                    $result[] = $this->denormalizeFromParameter($input, $parameter);
+                    if ($parameter->isVariadic()) {
+                        foreach(($input[$parameter->name] ?? []) as $variadicValue) {
+                            $copy = $input;
+                            $copy[$parameter->name] = $variadicValue;
+                            $result[] = $this->denormalizeFromParameter($copy, $parameter);
+                        }
+                    } else {
+                        $result[] = $this->denormalizeFromParameter($input, $parameter);
+                    }
                 }
             } catch (Exception $error) {
                 assert(isset($parameter));
