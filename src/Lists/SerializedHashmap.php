@@ -5,11 +5,11 @@ use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 
 /**
- * A list of items that is already serialized and does not need to be serialized again.
+ * A hashmap of items that is already serialized and does not need to be serialized again.
  *
  * @see ItemListNormalizer
  */
-final class SerializedList extends ItemList
+final class SerializedHashmap extends ItemHashmap
 {
     protected bool $mutable = false;
 
@@ -28,7 +28,7 @@ final class SerializedList extends ItemList
     /**
      * @return mixed[]|string|int|float|bool
      */
-    public function offsetGet(mixed $offset): array|string|int|float|bool|null|SerializedList|ItemHashmap
+    public function offsetGet(mixed $offset): array|string|int|float|bool|null|SerializedList|SerializedHashmap
     {
         return parent::offsetGet($offset);
     }

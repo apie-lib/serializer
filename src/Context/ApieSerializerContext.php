@@ -1,12 +1,23 @@
 <?php
 namespace Apie\Serializer\Context;
 
+use Apie\Core\Attributes\Context;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Core\Exceptions\IndexNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
+use Apie\Core\Metadata\Concerns\UseContextKey;
+use Apie\Core\TypeUtils;
+use Apie\Core\Utils\ConverterUtils;
+use Apie\Serializer\Exceptions\ValidationException;
+use Apie\Serializer\FieldFilters\FieldFilterInterface;
+use Apie\Serializer\FieldFilters\NoFiltering;
+use Apie\Serializer\Relations\EmbedRelationInterface;
+use Apie\Serializer\Relations\NoRelationEmbedded;
 use Apie\Serializer\Serializer;
+use Apie\TypeConverter\Exceptions\CanNotConvertObjectToUnionException;
 use Exception;
 use ReflectionIntersectionType;
 use ReflectionMethod;
@@ -14,31 +25,41 @@ use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionType;
 use ReflectionUnionType;
-use RuntimeException;
 
 final class ApieSerializerContext
 {
+    use UseContextKey;
+
+    private ?ApieSerializerContext $parentState = null;
+
     public function __construct(private Serializer $serializer, private ApieContext $apieContext)
     {
     }
 
     public function denormalizeFromTypehint(mixed $input, ReflectionType|null $typehint): mixed
     {
+        if ($input === null && (!$typehint || $typehint->allowsNull())) {
+            return null;
+        }
         if ($typehint instanceof ReflectionIntersectionType) {
             throw new InvalidTypeException($typehint, 'ReflectionNamedType|ReflectionUnionType|null');
         }
         if ($typehint instanceof ReflectionUnionType) {
-            $lastException = new RuntimeException('Unknown error');
+            $exceptions = [];
             foreach ($typehint->getTypes() as $type) {
                 try {
                     return $this->serializer->denormalizeNewObject($input, $type->getName(), $this->apieContext);
                 } catch (Exception $exception) {
-                    $lastException = $exception;
+                    $exceptions[$type->getName()] = $exception;
                 }
             }
-            throw $lastException;
+            throw new CanNotConvertObjectToUnionException($input, $exceptions, $typehint);
         }
         if ($typehint instanceof ReflectionNamedType) {
+            // edge case, should probably work differently then this
+            if ($input === '' && $typehint->allowsNull() && !TypeUtils::allowEmptyString($typehint) && $this->apieContext->hasContext(ContextConstants::CMS)) {
+                return null;
+            }
             return $this->serializer->denormalizeNewObject($input, $typehint->getName(), $this->apieContext);
         }
         return $this->serializer->denormalizeNewObject($input, 'mixed', $this->apieContext);
@@ -48,14 +69,28 @@ final class ApieSerializerContext
     {
         $key = $parameter->getName();
         $type = $parameter->getType();
+        if ($parameter->getAttributes(Context::class)) {
+            $contextKey = $this->getContextKey($this->apieContext, $parameter, false);
+            $contextValue = $this->apieContext->getContext(
+                $contextKey,
+                !$parameter->isDefaultValueAvailable()
+            ) ?? $parameter->getDefaultValue();
+            if ($type) {
+                return ConverterUtils::dynamicCast($contextValue, $type);
+            }
+            return $contextValue;
+        }
         if (!$parameter->isOptional() && !isset($input[$key])) {
             throw new IndexNotFoundException($key);
         }
-        $defaultValue = $parameter->isOptional() ? $parameter->getDefaultValue() : null;
+        $defaultValue = null;
+        if ($parameter->isDefaultValueAvailable()) {
+            $defaultValue = $parameter->getDefaultValue();
+        }
         if ($type === null || ((string) $type) === 'mixed' || !isset($input[$key])) {
             return $input[$key] ?? $defaultValue;
         }
-        $newContext = new self($this->serializer, $this->createChildContext($key));
+        $newContext = $this->visit($key);
         return $newContext->denormalizeFromTypehint($input[$key], $type);
     }
 
@@ -65,9 +100,30 @@ final class ApieSerializerContext
             $input = $this->serializer->denormalizeNewObject($input, ItemHashmap::class, $this->apieContext);
         }
         $result = [];
-        // TODO: validation errors
-        foreach ($method->getParameters() as $parameter) {
-            $result[] = $this->denormalizeFromParameter($input, $parameter);
+        $validationErrors = [];
+        // this construction is for performance reasons as it maintains only one try catch context.
+        $todo = $method->getParameters();
+        while (!empty($todo)) {
+            try {
+                while (!empty($todo)) {
+                    $parameter = array_shift($todo);
+                    if ($parameter->isVariadic()) {
+                        foreach(($input[$parameter->name] ?? []) as $variadicValue) {
+                            $copy = $input;
+                            $copy[$parameter->name] = $variadicValue;
+                            $result[] = $this->denormalizeFromParameter($copy, $parameter);
+                        }
+                    } else {
+                        $result[] = $this->denormalizeFromParameter($input, $parameter);
+                    }
+                }
+            } catch (Exception $error) {
+                assert(isset($parameter));
+                $validationErrors[$parameter->name] = $error;
+            }
+        }
+        if (!empty($validationErrors)) {
+            throw ValidationException::createFromArray($validationErrors);
         }
         return $result;
     }
@@ -89,14 +145,34 @@ final class ApieSerializerContext
         return $this->serializer->normalize($object, $newContext);
     }
 
-    public function createChildContext(string $key): ApieContext
+    private function createChildContext(string $key): ApieContext
     {
+        $context = $this->apieContext;
         $hierarchy = [];
-        if ($this->apieContext->hasContext('hierarchy')) {
-            $hierarchy = $this->apieContext->getContext('hierarchy');
+        if ($context->hasContext('hierarchy')) {
+            $hierarchy = $context->getContext('hierarchy');
         }
         $hierarchy[] = $key;
-        return $this->apieContext->withContext('hierarchy', $hierarchy);
+        $fieldFilter = $context->getContext(FieldFilterInterface::class, false) ? : new NoFiltering();
+        $context = $context->withContext(FieldFilterInterface::class, $fieldFilter->followField($key));
+
+        $relationFilter = $context->getContext(EmbedRelationInterface::class, false) ? : new NoRelationEmbedded();
+        $context = $context->withContext(EmbedRelationInterface::class, $relationFilter->followField($key));
+
+        return $context->withContext('hierarchy', $hierarchy);
+    }
+
+    public function visit(string $key): self
+    {
+        $childContext = $this->createChildContext($key);
+        $res = new ApieSerializerContext($this->serializer, $childContext);
+        $res->parentState = $this;
+        return $res;
+    }
+
+    public function getParentState(): ?self
+    {
+        return $this->parentState;
     }
 
     public function getContext(): ApieContext

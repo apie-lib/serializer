@@ -1,0 +1,13 @@
+services:
+    Apie\Serializer\Serializer:
+      factory: ['Apie\Serializer\Serializer', 'create']
+      arguments:
+          - !tagged_iterator Apie\Serializer\Serializer
+      tags:
+        - { name: 'apie.context' }
+
+    Apie\Serializer\EncoderHashmap:
+      factory: ['Apie\Serializer\EncoderHashmap', 'create']
+
+    Apie\Serializer\DecoderHashmap:
+      factory: ['Apie\Serializer\DecoderHashmap', 'create']

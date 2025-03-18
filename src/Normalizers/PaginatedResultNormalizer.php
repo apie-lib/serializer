@@ -28,6 +28,7 @@ class PaginatedResultNormalizer implements NormalizerInterface
         return new ItemHashmap(array_filter(
             [
                 'totalCount' => $object->totalCount,
+                'filteredCount' => $object->filteredCount,
                 'list' => $apieSerializerContext->normalizeAgain($object->list),
                 'first' => $this->renderFirst($uri, $object),
                 'last' => $this->renderLast($uri, $object),
@@ -77,13 +78,10 @@ class PaginatedResultNormalizer implements NormalizerInterface
      */
     private function renderNext(string $uri, PaginatedResult $object): ?string
     {
-        $pageIndex = 1 + floor($object->totalCount / $object->pageSize);
+        $pageIndex = $object->pageNumber + 1;
         if ($pageIndex * $object->pageSize > $object->totalCount) {
-            $pageIndex--;
+            return null;
         }
-        if ($object->pageNumber < $pageIndex) {
-            return $uri . $object->querySearch->withPageIndex((int) $pageIndex)->toHttpQuery();
-        }
-        return null;
+        return $uri . $object->querySearch->withPageIndex((int) $pageIndex)->toHttpQuery();
     }
 }
