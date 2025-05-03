@@ -108,7 +108,7 @@ final class ApieSerializerContext
                 while (!empty($todo)) {
                     $parameter = array_shift($todo);
                     if ($parameter->isVariadic()) {
-                        foreach(($input[$parameter->name] ?? []) as $variadicValue) {
+                        foreach (($input[$parameter->name] ?? []) as $variadicValue) {
                             $copy = $input;
                             $copy[$parameter->name] = $variadicValue;
                             $result[] = $this->denormalizeFromParameter($copy, $parameter);
