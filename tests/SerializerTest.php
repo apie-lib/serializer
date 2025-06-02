@@ -58,7 +58,7 @@ class SerializerTest extends TestCase
 
     #[\PHPUnit\Framework\Attributes\DataProvider('denormalizeProvider')]
     #[\PHPUnit\Framework\Attributes\Test]
-    public function it_can_denormalize_objects(object $expected, mixed $input, string $desiredType, ApieContext $apieContext)
+    public function it_can_denormalize_objects(mixed $expected, mixed $input, string $desiredType, ApieContext $apieContext)
     {
         $serializer = $this->givenASerializer();
         $this->assertEquals($expected, $serializer->denormalizeNewObject($input, $desiredType, $apieContext));
@@ -213,6 +213,20 @@ class SerializerTest extends TestCase
             new SerializedPermission('test'),
             'test',
             PermissionInterface::class,
+            new ApieContext()
+        ];
+
+        yield 'Union type' => [
+            42,
+            42,
+            'int|string',
+            new ApieContext()
+        ];
+
+        yield 'Union type (reversed order)' => [
+            42,
+            42,
+            'string|int',
             new ApieContext()
         ];
 

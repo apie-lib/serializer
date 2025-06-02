@@ -35,6 +35,7 @@ use Apie\Serializer\Normalizers\RelationNormalizer;
 use Apie\Serializer\Normalizers\ResourceNormalizer;
 use Apie\Serializer\Normalizers\StringableCompositeValueObjectNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
+use Apie\Serializer\Normalizers\UnionDenormalizer;
 use Apie\Serializer\Normalizers\UploadedFileNormalizer;
 use Apie\Serializer\Normalizers\ValueObjectNormalizer;
 use Apie\Serializer\Relations\EmbedRelationInterface;
@@ -79,6 +80,7 @@ class Serializer
             new BooleanNormalizer(),
             new ItemListNormalizer(),
             new ReflectionTypeNormalizer(),
+            new UnionDenormalizer(),
         ]));
     }
 
