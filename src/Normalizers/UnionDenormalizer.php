@@ -2,7 +2,6 @@
 
 namespace Apie\Serializer\Normalizers;
 
-use Apie\Core\ApieLib;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Serializer\Context\ApieSerializerContext;
@@ -10,7 +9,6 @@ use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\TypeConverter\ReflectionTypeFactory;
 use Psr\Http\Message\UploadedFileInterface;
 use ReflectionIntersectionType;
-use ReflectionNamedType;
 use ReflectionUnionType;
 
 class UnionDenormalizer implements DenormalizerInterface
