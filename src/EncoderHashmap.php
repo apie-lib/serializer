@@ -37,7 +37,7 @@ final class EncoderHashmap extends ItemHashmap
         $acceptHeaders = AcceptHeader::fromString($acceptString);
         foreach ($this as $mimeType => $_encoder) {
             if ($item = $acceptHeaders->get($mimeType)) {
-                return $item->getValue();
+                return $mimeType;
             }
         }
         if (strtolower($request->getMethod()) === 'delete') {
