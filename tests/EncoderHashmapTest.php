@@ -8,7 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 final class EncoderHashmapTest extends TestCase
 {
-    public function testReturnsExplicitContentType()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function it_works_on_explicit_content_type()
     {
         $hashmap = EncoderHashmap::create();
 
@@ -23,7 +24,16 @@ final class EncoderHashmapTest extends TestCase
         $this->assertEquals('application/json', $contentType);
     }
 
-    public function testReturnsWildcardContentType()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function it_will_throw_special_error_on_having_no_encoders()
+    {
+        $hashmap = new EncoderHashmap();
+        $this->expectException(\LogicException::class);
+        $hashmap->getAcceptedContentTypeForRequest(new Request('GET', '/'));
+    }
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function it_works_with_wildcards()
     {
         $hashmap = EncoderHashmap::create();
 
@@ -38,7 +48,8 @@ final class EncoderHashmapTest extends TestCase
         $this->assertEquals('application/json', $contentType);
     }
 
-    public function testReturnsDefaultWhenNoAcceptHeader()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function it_returns_json_on_missing_accept_header()
     {
         $hashmap = EncoderHashmap::create();
 
@@ -49,7 +60,8 @@ final class EncoderHashmapTest extends TestCase
         $this->assertEquals('application/json', $contentType);
     }
 
-    public function testReturnsDefaultOnDeleteWhenNotAccepted()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function it_ignores_errors_on_delete_requests()
     {
         $hashmap = EncoderHashmap::create();
 
@@ -64,10 +76,9 @@ final class EncoderHashmapTest extends TestCase
         $this->assertEquals('application/json', $contentType);
     }
 
-    public function testThrowsWhenNotAccepted()
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function it_refuses_invalid_content_types()
     {
-        $this->expectException(NotAcceptedException::class);
-
         $hashmap = EncoderHashmap::create();
 
         $request = new Request(
@@ -75,7 +86,7 @@ final class EncoderHashmapTest extends TestCase
             '/',
             ['Accept' => 'application/xml']
         );
-
+        $this->expectException(NotAcceptedException::class);
         $hashmap->getAcceptedContentTypeForRequest($request);
     }
 }
