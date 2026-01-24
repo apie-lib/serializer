@@ -114,7 +114,8 @@ class Serializer
             return $isList ? new ItemList($returnValue) : new ItemHashmap($returnValue);
         }
         if (!is_object($object)) {
-            if (in_array(get_debug_type($object), ['resource', 'resource (closed)'])) {
+            $type = get_debug_type($object);
+            if ($type === 'resource' || str_starts_with($type, 'resource ')) {
                 throw new InvalidTypeException($object, 'primitive');
             }
             return $object;
