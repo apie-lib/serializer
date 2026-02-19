@@ -46,7 +46,7 @@ class ResourceNormalizer implements NormalizerInterface, DenormalizerInterface
         }
         if ($result instanceof EntityInterface) {
             $boundedContextId = $apieContext->getContext(ContextConstants::BOUNDED_CONTEXT_ID);
-            $resourceClass = new ReflectionClass($apieContext->getContext(ContextConstants::RESOURCE_NAME));
+            $resourceClass = new ReflectionClass($apieContext->getContext(ContextConstants::RESOURCE_NAME, false) ?? $result);
             $displayAsString = ($apieContext->hasContext(ContextConstants::GET_ALL_OBJECTS) && $apieContext->hasContext(ContextConstants::CMS))
                 || $apieContext->hasContext(ContextConstants::SHOW_PROFILE);
             if ($displayAsString) {
