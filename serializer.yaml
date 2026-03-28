@@ -6,6 +6,10 @@ services:
       tags:
         - { name: 'apie.context' }
 
+    Apie\Serializer\PropertySerializer\PropertySerializer:
+      tags:
+        - { name: 'apie.context' }
+
     Apie\Serializer\EncoderHashmap:
       factory: ['Apie\Serializer\EncoderHashmap', 'create']
 
