@@ -6,6 +6,7 @@ use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Other\DiscriminatorMapping;
 use Apie\Core\Utils\EntityUtils;
+use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\Context\ApieSerializerContext;
 use Apie\Serializer\Exceptions\ValidationException;
 use Apie\Serializer\Interfaces\DenormalizerInterface;
@@ -37,7 +38,7 @@ class PolymorphicObjectNormalizer implements DenormalizerInterface
         if (!isset($object[$propertyName])) {
             throw ValidationException::createFromArray(['id' => new IndexNotFoundException($propertyName)]);
         }
-        $className = $mapping->getClassNameFromDiscriminator($object[$propertyName]);
+        $className = $mapping->getClassNameFromDiscriminator(Utils::toString($object[$propertyName]));
         return $apieSerializerContext->denormalizeFromTypehint($object, ReflectionTypeFactory::createReflectionType($className));
     }
 }

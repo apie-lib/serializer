@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Serializer\PropertySerializer;
 
+use Apie\Core\Attributes\StoreOptions;
 use JsonSerializable;
 use WeakMap;
 
@@ -11,6 +12,7 @@ final class SerializedProperties implements JsonSerializable
     private array $registeredObjects = [];
 
     /** @var WeakMap<object, mixed> */
+    #[StoreOptions(alwaysMixedData: true)]
     private WeakMap $registeredObjectsMap;
 
     public function __construct()
