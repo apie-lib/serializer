@@ -33,6 +33,7 @@ use Apie\Serializer\Normalizers\PolymorphicObjectNormalizer;
 use Apie\Serializer\Normalizers\ReflectionTypeNormalizer;
 use Apie\Serializer\Normalizers\RelationNormalizer;
 use Apie\Serializer\Normalizers\ResourceNormalizer;
+use Apie\Serializer\Normalizers\SelfNormalizer;
 use Apie\Serializer\Normalizers\StringableCompositeValueObjectNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\UnionDenormalizer;
@@ -60,9 +61,12 @@ class Serializer
     {
         return new self(new NormalizerList([
             ...$additionalNormalizers,
+
             new AliasDenormalizer(),
             new PaginatedResultNormalizer(),
             new DoNotChangeFileNormalizer(),
+            new SelfNormalizer(),
+
             new PermissionListNormalizer(),
             new RelationNormalizer(),
             new UploadedFileNormalizer(),
