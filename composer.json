@@ -21,9 +21,9 @@
   },
   "extra": {
     "apie-objects": [
-      "Apie\\Serializer\\Lists\\SerializedHashmap",
-      "Apie\\Serializer\\Lists\\SerializedList"
-    ]
+    "Apie\\Serializer\\ValueObjects\\SerializedPhpObject",
+    "Apie\\Serializer\\PropertySerializer\\TypeDefinition"
+]
   },
   "require": {
     "php": ">=8.3",
