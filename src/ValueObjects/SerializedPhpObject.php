@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Serializer\ValueObjects;
 
+use Apie\Core\ValueObjects\Interfaces\AllowsLargeStringsInterface;
 use Apie\Core\ValueObjects\Interfaces\StringValueObjectInterface;
 use Apie\Core\ValueObjects\IsStringValueObject;
 use function Opis\Closure\init;
@@ -8,7 +9,7 @@ use function Opis\Closure\serialize;
 use function Opis\Closure\set_security_provider;
 use function Opis\Closure\unserialize;
 
-final class SerializedPhpObject implements StringValueObjectInterface
+final class SerializedPhpObject implements StringValueObjectInterface, AllowsLargeStringsInterface
 {
     use IsStringValueObject;
 
