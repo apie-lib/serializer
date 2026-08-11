@@ -32,7 +32,8 @@ class ValueObjectNormalizer implements NormalizerInterface, DenormalizerInterfac
     {
         if (is_a($desiredType, ValueObjectInterface::class, true)) {
             $class = new ReflectionClass($desiredType);
-            return $class->implementsInterface(CompositeWithOwnValidation::class)
+
+            return in_array(CompositeWithOwnValidation::class, $class->getInterfaceNames())
                 ||!in_array(CompositeValueObject::class, $class->getTraitNames());
         }
         return false;
