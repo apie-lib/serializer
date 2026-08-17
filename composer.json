@@ -21,6 +21,7 @@
   },
   "extra": {
     "apie-objects": [
+    "Apie\\Serializer\\Dto\\DurationDto",
     "Apie\\Serializer\\ValueObjects\\SerializedPhpObject",
     "Apie\\Serializer\\PropertySerializer\\TypeDefinition"
 ]

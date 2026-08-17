@@ -47,7 +47,7 @@ class PropertySerializer
     }
 
     /**
-     * @param ReflectionClass<object> $reflectionClass
+     * @param ReflectionClass<covariant object> $reflectionClass
      * @return iterable<string, ReflectionProperty>
      */
     private function iterate(ReflectionClass $reflectionClass, int $filter): iterable

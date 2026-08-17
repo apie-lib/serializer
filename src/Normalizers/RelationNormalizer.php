@@ -5,6 +5,7 @@ use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Datalayers\ApieDatalayer;
+use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Identifiers\IdentifierInterface;
 use Apie\Core\Lists\ItemHashmap;
@@ -16,7 +17,7 @@ use ReflectionClass;
 class RelationNormalizer implements NormalizerInterface
 {
     /**
-     * @param ReflectionClass<object> $resourceClass
+     * @param ReflectionClass<EntityInterface>|ReflectionClass<IdentifierInterface<EntityInterface>> $resourceClass
      */
     private function findBoundedContext(
         ApieSerializerContext $apieSerializerContext,
