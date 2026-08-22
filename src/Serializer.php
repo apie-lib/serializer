@@ -18,6 +18,7 @@ use Apie\Serializer\Interfaces\DenormalizerInterface;
 use Apie\Serializer\Interfaces\NormalizerInterface;
 use Apie\Serializer\Lists\NormalizerList;
 use Apie\Serializer\Normalizers\AliasDenormalizer;
+use Apie\Serializer\Normalizers\BcMathNormalizer;
 use Apie\Serializer\Normalizers\BooleanNormalizer;
 use Apie\Serializer\Normalizers\DateTimeNormalizer;
 use Apie\Serializer\Normalizers\DateTimeZoneNormalizer;
@@ -25,6 +26,7 @@ use Apie\Serializer\Normalizers\DoNotChangeFileNormalizer;
 use Apie\Serializer\Normalizers\DurationNormalizer;
 use Apie\Serializer\Normalizers\EnumNormalizer;
 use Apie\Serializer\Normalizers\FloatNormalizer;
+use Apie\Serializer\Normalizers\GmpNormalizer;
 use Apie\Serializer\Normalizers\IdentifierNormalizer;
 use Apie\Serializer\Normalizers\IntegerNormalizer;
 use Apie\Serializer\Normalizers\ItemListNormalizer;
@@ -78,6 +80,8 @@ class Serializer
             new DateTimeNormalizer(),
             new DurationNormalizer(),
             new UriNormalizer(),
+            new GmpNormalizer(),
+            new BcMathNormalizer(),
             new DateTimeZoneNormalizer(),
             new ResourceNormalizer(),
             new EnumNormalizer(),
