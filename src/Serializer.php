@@ -39,6 +39,7 @@ use Apie\Serializer\Normalizers\ResourceNormalizer;
 use Apie\Serializer\Normalizers\SelfNormalizer;
 use Apie\Serializer\Normalizers\StringableCompositeValueObjectNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
+use Apie\Serializer\Normalizers\TranslationNormalizer;
 use Apie\Serializer\Normalizers\UnionDenormalizer;
 use Apie\Serializer\Normalizers\UploadedFileNormalizer;
 use Apie\Serializer\Normalizers\UriNormalizer;
@@ -71,6 +72,7 @@ class Serializer
             new DoNotChangeFileNormalizer(),
             new SelfNormalizer(),
 
+            new TranslationNormalizer(),
             new PermissionListNormalizer(),
             new RelationNormalizer(),
             new UploadedFileNormalizer(),
