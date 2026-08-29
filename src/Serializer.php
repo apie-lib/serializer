@@ -136,7 +136,6 @@ class Serializer
         }
         $metadata = MetadataFactory::getResultMetadata(new ReflectionClass($object), $apieContext);
         $returnValue = [];
-
         foreach ($metadata->getHashmap()->filterOnContext($apieContext, getters: true) as $fieldName => $metadata) {
             if ($metadata->isField() && $fieldFilter->isFiltered($fieldName)) {
                 $returnValue[$fieldName] = $serializerContext->normalizeChildElement(
