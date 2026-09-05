@@ -22,9 +22,12 @@ use Apie\Serializer\Normalizers\BcMathNormalizer;
 use Apie\Serializer\Normalizers\BooleanNormalizer;
 use Apie\Serializer\Normalizers\DateTimeNormalizer;
 use Apie\Serializer\Normalizers\DateTimeZoneNormalizer;
+use Apie\Serializer\Normalizers\DomNormalizer;
 use Apie\Serializer\Normalizers\DoNotChangeFileNormalizer;
 use Apie\Serializer\Normalizers\DurationNormalizer;
 use Apie\Serializer\Normalizers\EnumNormalizer;
+use Apie\Serializer\Normalizers\FfiCdataNormalizer;
+use Apie\Serializer\Normalizers\FfiCtypeNormalizer;
 use Apie\Serializer\Normalizers\FloatNormalizer;
 use Apie\Serializer\Normalizers\GmpNormalizer;
 use Apie\Serializer\Normalizers\IdentifierNormalizer;
@@ -37,6 +40,8 @@ use Apie\Serializer\Normalizers\ReflectionTypeNormalizer;
 use Apie\Serializer\Normalizers\RelationNormalizer;
 use Apie\Serializer\Normalizers\ResourceNormalizer;
 use Apie\Serializer\Normalizers\SelfNormalizer;
+use Apie\Serializer\Normalizers\SimpleXMLElementNormalizer;
+use Apie\Serializer\Normalizers\StreamBucketNormalizer;
 use Apie\Serializer\Normalizers\StringableCompositeValueObjectNormalizer;
 use Apie\Serializer\Normalizers\StringNormalizer;
 use Apie\Serializer\Normalizers\TranslationNormalizer;
@@ -70,6 +75,7 @@ class Serializer
             new AliasDenormalizer(),
             new PaginatedResultNormalizer(),
             new DoNotChangeFileNormalizer(),
+            new DomNormalizer(),
             new SelfNormalizer(),
 
             new TranslationNormalizer(),
@@ -82,9 +88,13 @@ class Serializer
             new DateTimeNormalizer(),
             new DurationNormalizer(),
             new UriNormalizer(),
+            new FfiCdataNormalizer(),
+            new FfiCtypeNormalizer(),
+            new SimpleXMLElementNormalizer(),
             new GmpNormalizer(),
             new BcMathNormalizer(),
             new DateTimeZoneNormalizer(),
+            new StreamBucketNormalizer(),
             new ResourceNormalizer(),
             new EnumNormalizer(),
             new ValueObjectNormalizer(),
