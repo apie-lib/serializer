@@ -16,6 +16,12 @@ The code is maintained in a monorepo, so PR's need to be sent to the [monorepo](
 ## Documentation
 The Apie serializer serializes stored data to the customers or backwards. It is very similar to the Symfony serializer, except the context array in Symfony serializer is replaced with a ApieSerializerContext which also contains method for recursive calls. It still has the same logic related to decoding/encoding/normalizing and denormalizing.
 
+### Standalone usage
+Install it with:
+```bash
+composer require apie/serializer
+```
+
 ### Normalization and denormalization Usage
 The simples use is just calling the static method create or customize it with the constructor method:
 ```php
@@ -35,3 +41,14 @@ $serializer->denormalizeNewObject(
 ### Customization
 To add your own normalization logic, you need to add a class implementing Apie\Serializer\Interfaces\NormalizerInterface. 
 To add your own denormalization logic, you need to add a class implementing Apie\Serializer\Interfaces\DenormalizerInterface.
+
+### Symfony integration
+Via `apie/apie-bundle`, `serializer.yaml` registers `Apie\Serializer\Serializer` built from all
+services tagged `Apie\Serializer\Serializer` (normalizers/denormalizers), along with
+`PropertySerializer`, `EncoderHashmap` and `DecoderHashmap` as services, and tags the serializer
+itself as an `apie.context` provider so it is available in the Apie context of a request.
+
+### Laravel integration
+Via `apie/laravel-apie`, the generated `Apie\Serializer\SerializerServiceProvider` registers the
+same `Serializer`, `PropertySerializer`, `EncoderHashmap` and `DecoderHashmap` services, collecting
+custom normalizers/denormalizers through the framework's tag map.

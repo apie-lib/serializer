@@ -36,6 +36,8 @@ use Apie\Serializer\Normalizers\ItemListNormalizer;
 use Apie\Serializer\Normalizers\PaginatedResultNormalizer;
 use Apie\Serializer\Normalizers\PermissionListNormalizer;
 use Apie\Serializer\Normalizers\PolymorphicObjectNormalizer;
+use Apie\Serializer\Normalizers\ReflectionClassNormalizer;
+use Apie\Serializer\Normalizers\ReflectionMethodNormalizer;
 use Apie\Serializer\Normalizers\ReflectionTypeNormalizer;
 use Apie\Serializer\Normalizers\RelationNormalizer;
 use Apie\Serializer\Normalizers\ResourceNormalizer;
@@ -103,7 +105,9 @@ class Serializer
             new FloatNormalizer(),
             new BooleanNormalizer(),
             new ItemListNormalizer(),
+            new ReflectionClassNormalizer(),
             new ReflectionTypeNormalizer(),
+            new ReflectionMethodNormalizer(),
             new UnionDenormalizer(),
         ]));
     }
