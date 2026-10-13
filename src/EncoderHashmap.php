@@ -23,9 +23,9 @@ final class EncoderHashmap extends ItemHashmap
         return new self(['application/json' => new JsonEncoder()]);
     }
 
-    public function getAcceptedContentTypeForRequest(RequestInterface $request): string
+    public function getAcceptedContentTypeForRequest(RequestInterface $request, ?string $fallback = null): string
     {
-        if (empty($this->internalArray)) {
+        if (empty($this->internalArray) && $fallback === null) {
             throw new LogicException('I am an encoder hashmap with no encoders?');
         }
     
@@ -44,6 +44,10 @@ final class EncoderHashmap extends ItemHashmap
             reset($this->internalArray);
             return key($this->internalArray) ? : 'application/json';
         }
-        throw new NotAcceptedException($acceptString);
+
+        if ($fallback === null) {
+            throw new NotAcceptedException($acceptString);
+        }
+        return $fallback;
     }
 }
