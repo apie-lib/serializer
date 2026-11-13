@@ -54,6 +54,7 @@ use Apie\Serializer\Normalizers\ValueObjectNormalizer;
 use Apie\Serializer\Relations\EmbedRelationInterface;
 use Apie\Serializer\Relations\NoRelationEmbedded;
 use Exception;
+use LogicException;
 use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
 use ReflectionMethod;
@@ -173,6 +174,18 @@ class Serializer
     }
 
     public function denormalizeNewObject(string|int|float|bool|ItemList|ItemHashmap|array|null|UploadedFileInterface $object, string $desiredType, ApieContext $apieContext): mixed
+    {
+        try {
+            return $this->doDenormalizeNewObject($object, $desiredType, $apieContext);
+        } catch (Exception $error) {
+            if ($object === null) {
+                throw new LogicException('Value is required.', 0, $error);
+            }
+            throw $error;
+        }
+    }
+
+    private function doDenormalizeNewObject(string|int|float|bool|ItemList|ItemHashmap|array|null|UploadedFileInterface $object, string $desiredType, ApieContext $apieContext): mixed
     {
         if (is_array($object)) {
             $isList = false;

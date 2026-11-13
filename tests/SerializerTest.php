@@ -7,7 +7,6 @@ use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\Datalayers\Lists\PaginatedResult;
 use Apie\Core\Datalayers\Search\QuerySearch;
 use Apie\Core\Datalayers\ValueObjects\LazyLoadedListIdentifier;
-use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Permissions\PermissionInterface;
@@ -402,7 +401,7 @@ class SerializerTest extends TestCase
     public function empty_enums_always_fail()
     {
         $serializer = $this->givenASerializer();
-        $this->expectException(InvalidTypeException::class);
+        $this->expectException(\LogicException::class);
         $serializer->denormalizeNewObject(null, EmptyEnum::class, new ApieContext());
     }
 
